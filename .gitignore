@@ -1,0 +1,19 @@
+## .NET Build & Artifacts
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+.vs/
+.vscode/
+.idea/
+
+## Internal / Spec Folder (as requested)
+test/
+
+## OS & Temporary Files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
