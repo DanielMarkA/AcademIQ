@@ -1,0 +1,248 @@
+@page "/courses"
+@inject AppStateService State
+@inject NavigationManager Navigation
+
+<!-- Header -->
+<div style="margin-bottom: 1.5rem;">
+    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
+        FALL 2026 · CURRENT TERM
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h1 style="font-family: var(--font-serif); font-size: 2rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+                My Courses
+            </h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                Continue where you left off and see what needs your attention next.
+            </p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <div style="position: relative;">
+                <input type="text" class="form-input" placeholder="Search courses" style="padding-left: 2rem; width: 220px;" />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <button class="btn btn-primary" style="background-color: var(--primary-navy); gap: 0.5rem;" @onclick="UpdateSavedContent">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                Update saved content
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Offline Availability Banner -->
+<div class="card" style="background-color: var(--accent-green-light); border: 1px solid var(--accent-green-border); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div style="width: 32px; height: 32px; border-radius: 6px; background-color: #ffffff; color: var(--accent-green); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+            📖
+        </div>
+        <div>
+            <strong style="color: var(--accent-green); font-size: 0.92rem;">All three courses are available on this device</strong>
+            <div style="color: var(--text-secondary); font-size: 0.82rem;">Recent lessons, assignments, and your drafts are ready without a connection.</div>
+        </div>
+    </div>
+    <div style="font-size: 0.82rem; font-weight: 600; color: var(--accent-green); font-family: var(--font-mono);">
+        486 MB saved
+    </div>
+</div>
+
+<!-- Filter Tabs & Term Switcher -->
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; background-color: var(--bg-surface-secondary); padding: 0.25rem; border-radius: var(--radius-md);">
+        <button class="btn btn-sm @(SelectedFilter == "all" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => SelectedFilter = "all"'>
+            All 3
+        </button>
+        <button class="btn btn-sm @(SelectedFilter == "progress" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => SelectedFilter = "progress"'>
+            In Progress 3
+        </button>
+        <button class="btn btn-sm @(SelectedFilter == "completed" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => SelectedFilter = "completed"'>
+            Completed 0
+        </button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+        <span>Showing Fall 2026</span>
+        <button class="btn btn-secondary btn-sm" style="gap: 0.35rem;">
+            Term
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- 3 Courses Grid -->
+<div class="grid-3" style="margin-bottom: 2rem;">
+    <!-- Course 1: Advanced Systems -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid var(--accent-green);">
+        <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">
+                    CS-401 · FALL 2026
+                </span>
+                <span class="badge badge-green">Ready offline</span>
+            </div>
+            <h2 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.2rem;">
+                Advanced Systems
+            </h2>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                Prof. Lee
+            </div>
+
+            <!-- Milestone Box -->
+            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+                <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
+                    NEXT MILESTONE
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem;">
+                    <strong>Lab Report 3</strong>
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Due Oct 4 · 11:59 PM</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+                    <span>Course progress</span>
+                    <strong>68%</strong>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 68%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Updated today at 9:42 AM</span>
+            <button class="btn btn-secondary btn-sm" @onclick='() => NavigateToCourse("CS-401")' style="gap: 0.35rem;">
+                Open course &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- Course 2: Data Structures -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid var(--accent-green);">
+        <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">
+                    CS-315 · FALL 2026
+                </span>
+                <span class="badge badge-green">Ready offline</span>
+            </div>
+            <h2 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.2rem;">
+                Data Structures
+            </h2>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                Dr. Sofia Malik
+            </div>
+
+            <!-- Milestone Box -->
+            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+                <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
+                    NEXT MILESTONE
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem;">
+                    <strong>Problem Set 6</strong>
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Due Oct 7 · 9:00 AM</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+                    <span>Course progress</span>
+                    <strong>54%</strong>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 54%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Updated today at 9:42 AM</span>
+            <button class="btn btn-secondary btn-sm" @onclick='() => NavigateToCourse("CS-315")' style="gap: 0.35rem;">
+                Open course &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- Course 3: Technical Writing -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid var(--accent-green);">
+        <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">
+                    ENG-210 · FALL 2026
+                </span>
+                <span class="badge badge-blue">Materials updating</span>
+            </div>
+            <h2 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.2rem;">
+                Technical Writing
+            </h2>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                Elena Ruiz
+            </div>
+
+            <!-- Milestone Box -->
+            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
+                <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
+                    NEXT MILESTONE
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem;">
+                    <strong>Proposal revision</strong>
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">Due Oct 11 · 5:00 PM</span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+                    <span>Course progress</span>
+                    <strong>82%</strong>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 82%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Updated today at 9:42 AM</span>
+            <button class="btn btn-secondary btn-sm" @onclick='() => NavigateToCourse("ENG-210")' style="gap: 0.35rem;">
+                Open course &rarr;
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Academic Calendar Footer Banner -->
+<div class="card" style="padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+        <span>📅</span>
+        <span>Midterm break begins October 19.</span>
+    </div>
+    <a href="#" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">
+        View full academic calendar &rarr;
+    </a>
+</div>
+
+@code {
+    private string SelectedFilter { get; set; } = "all";
+
+    private void NavigateToCourse(string code)
+    {
+        Navigation.NavigateTo($"/course/{code}");
+    }
+
+    private void UpdateSavedContent()
+    {
+        // Content refresh simulation
+    }
+}

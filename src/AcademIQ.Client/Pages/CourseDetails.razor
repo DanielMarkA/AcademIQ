@@ -1,0 +1,299 @@
+@page "/course/{CourseId}"
+@inject AppStateService State
+@inject NavigationManager Navigation
+
+<!-- Breadcrumb -->
+<div class="nav-breadcrumbs" style="margin-bottom: 1rem;">
+    <a href="courses">My Courses</a>
+    <span class="separator">/</span>
+    <span class="current">CS-401 Advanced Systems</span>
+</div>
+
+<!-- Header -->
+<div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
+            CS-401 · FALL 2026
+        </div>
+        <h1 style="font-family: var(--font-serif); font-size: 2.15rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+            Advanced Systems
+        </h1>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+            Study modern operating systems through reliability, concurrency, storage, and hands-on system design.
+        </p>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="status-pill offline-ready" style="font-size: 0.85rem; padding: 0.4rem 0.85rem;">
+            <span class="pulse-dot"></span>
+            Course ready offline
+        </span>
+        <button class="btn btn-secondary btn-sm" style="gap: 0.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="1"></circle>
+                <circle cx="19" cy="12" r="1"></circle>
+                <circle cx="5" cy="12" r="1"></circle>
+            </svg>
+            Course options
+        </button>
+    </div>
+</div>
+
+<!-- Top Section: Instructor Info (Left) + Overall Progress (Right) -->
+<div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Instructor Card -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="user-avatar" style="width: 44px; height: 44px; font-size: 1rem; font-weight: 700; background-color: var(--primary-navy-muted); color: var(--primary-navy);">
+                        PL
+                    </div>
+                    <div>
+                        <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">INSTRUCTOR</div>
+                        <h3 style="font-size: 1.1rem; margin: 0;">Prof. Lee</h3>
+                    </div>
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Office hours · Tue &amp; Thu, 2–4 PM</span>
+            </div>
+
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                Explore how computer systems remain dependable under real-world constraints. Weekly modules pair concise theory with practical labs and reflective technical writing.
+            </p>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 0.82rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            <span>📅 Tue &amp; Thu · 10:00 AM</span>
+            <span>📍 Engineering Hall 204</span>
+            <span>📖 4 credits</span>
+        </div>
+    </div>
+
+    <!-- Overall Progress Card -->
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.2rem;">6 of 10 weeks underway</div>
+            <h3 style="font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 0.75rem;">Overall progress</h3>
+            
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span style="font-size: 2.4rem; font-weight: 700; font-family: var(--font-serif); color: var(--text-primary);">
+                    62<span style="font-size: 1.4rem;">%</span>
+                </span>
+                <span class="badge badge-green">On track</span>
+            </div>
+
+            <div class="progress-bar-container" style="height: 8px;">
+                <div class="progress-bar-fill" style="width: 62%;"></div>
+            </div>
+        </div>
+
+        <div style="font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 0.75rem;">
+            11 of 18 activities complete · Last activity today
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Section: Weekly Modules (Left) + Quick Links & Upcoming Work (Right) -->
+<div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Weekly Modules List -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h3 style="font-family: var(--font-serif); font-size: 1.2rem; margin: 0;">Weekly modules</h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Lessons, activities, and course resources</span>
+            </div>
+            <a href="#" style="font-size: 0.82rem; color: var(--primary-navy); font-weight: 600; text-decoration: none;">View all 10 weeks</a>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+            <!-- Week 5 -->
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; cursor: pointer; background-color: #FAFCFF;"
+                 @onclick='() => Navigation.NavigateTo("/assignment/1")'>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background-color: var(--accent-blue-light); color: var(--accent-blue); padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem;">
+                        Week 5
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Reliable storage and recovery</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">3 lessons · 1 lab · 2 of 4 complete</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="badge badge-blue">In progress</span>
+                    <span style="color: var(--text-muted);">&rarr;</span>
+                </div>
+            </div>
+
+            <!-- Week 4 -->
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background-color: var(--accent-green-light); color: var(--accent-green); padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem;">
+                        Week 4
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Concurrency patterns</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">4 lessons · 1 quiz · Completed Sep 26</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="badge badge-green">Complete</span>
+                    <span style="color: var(--text-muted);">&rarr;</span>
+                </div>
+            </div>
+
+            <!-- Week 3 -->
+            <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background-color: var(--accent-green-light); color: var(--accent-green); padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem;">
+                        Week 3
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Processes and scheduling</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">3 lessons · 1 discussion · Completed Sep 19</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="badge badge-green">Complete</span>
+                    <span style="color: var(--text-muted);">&rarr;</span>
+                </div>
+            </div>
+
+            <!-- Week 2 -->
+            <div style="padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background-color: var(--accent-green-light); color: var(--accent-green); padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 700; font-size: 0.78rem;">
+                        Week 2
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">System calls and boundaries</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">4 lessons · 1 exercise · Completed Sep 12</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span class="badge badge-green">Complete</span>
+                    <span style="color: var(--text-muted);">&rarr;</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Quick links + Upcoming Work -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Quick Links -->
+        <div class="card" style="padding: 1.25rem;">
+            <h3 style="font-family: var(--font-serif); font-size: 1.1rem; margin-bottom: 1rem;">Quick links</h3>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+                <div style="padding: 0.75rem; background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; cursor: pointer;"
+                     @onclick='() => Navigation.NavigateTo("/assignment/1")'>
+                    <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem;">
+                        <span>📋</span>
+                        <div>
+                            <strong>Assignments</strong>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">2 open</div>
+                        </div>
+                    </div>
+                    <span>↗</span>
+                </div>
+
+                <div style="padding: 0.75rem; background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between; cursor: pointer;"
+                     @onclick='() => Navigation.NavigateTo("/dashboard")'>
+                    <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem;">
+                        <span>📊</span>
+                        <div>
+                            <strong>Grades</strong>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Current: 91%</div>
+                        </div>
+                    </div>
+                    <span>↗</span>
+                </div>
+
+                <div style="padding: 0.75rem; background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem;">
+                        <span>📁</span>
+                        <div>
+                            <strong>Course materials</strong>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">28 files</div>
+                        </div>
+                    </div>
+                    <span>↗</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Work -->
+        <div class="card" style="padding: 1.25rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <h3 style="font-family: var(--font-serif); font-size: 1.1rem; margin: 0;">Upcoming work</h3>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Next 10 days</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem;">
+                    <div style="background-color: var(--accent-amber-light); color: var(--accent-amber); padding: 0.35rem 0.5rem; border-radius: 6px; text-align: center; min-width: 40px;">
+                        <div style="font-weight: 700; font-size: 0.95rem; line-height: 1;">04</div>
+                        <div style="font-size: 0.65rem; text-transform: uppercase;">OCT</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Lab Report 3</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">11:59 PM</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem;">
+                    <div style="background-color: #F1F5F9; color: var(--text-secondary); padding: 0.35rem 0.5rem; border-radius: 6px; text-align: center; min-width: 40px;">
+                        <div style="font-weight: 700; font-size: 0.95rem; line-height: 1;">07</div>
+                        <div style="font-size: 0.65rem; text-transform: uppercase;">OCT</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Reliability quiz</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">9:00 AM</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 0.75rem; font-size: 0.85rem;">
+                    <div style="background-color: #F1F5F9; color: var(--text-secondary); padding: 0.35rem 0.5rem; border-radius: 6px; text-align: center; min-width: 40px;">
+                        <div style="font-weight: 700; font-size: 0.95rem; line-height: 1;">11</div>
+                        <div style="font-size: 0.65rem; text-transform: uppercase;">OCT</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Peer review notes</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">5:00 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Announcements Banner -->
+<div class="card" style="padding: 1.25rem 1.5rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+        <div>
+            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin: 0;">Recent announcements</h3>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Updates from Prof. Lee</span>
+        </div>
+        <a href="#" style="font-size: 0.82rem; color: var(--primary-navy); font-weight: 600; text-decoration: none;">View all announcements &rarr;</a>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 2rem; border-top: 1px solid var(--border-subtle); padding-top: 1rem; font-size: 0.85rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span class="badge badge-green">New</span>
+            <div>
+                <strong>Lab 3 sample data is now available</strong>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">Use the new dataset to verify your recovery analysis before submitting.</div>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span class="badge badge-slate">Sep 29</span>
+            <div>
+                <strong>Week 5 office hours extended</strong>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">Thursday office hours will run until 5:30 PM in Engineering Hall 312.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string? CourseId { get; set; }
+}

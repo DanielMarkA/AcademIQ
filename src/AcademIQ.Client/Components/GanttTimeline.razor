@@ -1,0 +1,112 @@
+@inject AppStateService State
+
+<div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+            <div>
+                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-primary); margin: 0;">Course Milestone Tracker</h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">CS-401 · Fall term</span>
+            </div>
+            <div class="badge badge-blue" style="font-weight: 700; font-size: 0.85rem; padding: 0.25rem 0.6rem;">
+                60%
+            </div>
+        </div>
+
+        <!-- Pure CSS Gantt Grid -->
+        <div class="gantt-container">
+            <div class="gantt-grid">
+                <!-- Header -->
+                <div class="gantt-header-cell label-col">Milestone</div>
+                @for (int w = 1; w <= 10; w++)
+                {
+                    <div class="gantt-header-cell">@w</div>
+                }
+
+                <!-- Row 1: Lab Report 3 (Weeks 5-6) -->
+                <div class="gantt-row-label">
+                    <div class="gantt-row-title">Lab Report 3</div>
+                    <div class="gantt-row-subtitle">Draft + rubric</div>
+                </div>
+                @for (int w = 1; w <= 10; w++)
+                {
+                    <div class="gantt-cell">
+                        @if (w == 5)
+                        {
+                            <div class="gantt-bar in-progress" style="width: 200%; left: 0;">
+                                In-Progress
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Row 2: Midterm (Week 7) -->
+                <div class="gantt-row-label">
+                    <div class="gantt-row-title">Midterm</div>
+                    <div class="gantt-row-subtitle">Oct 19 · 09:00</div>
+                </div>
+                @for (int w = 1; w <= 10; w++)
+                {
+                    <div class="gantt-cell">
+                        @if (w == 7)
+                        {
+                            <div class="gantt-bar due-soon" style="width: 100%; left: 0;">
+                                Due Soon
+                            </div>
+                        }
+                    </div>
+                }
+
+                <!-- Row 3: Final Project (Weeks 9-10) -->
+                <div class="gantt-row-label">
+                    <div class="gantt-row-title">Final Project</div>
+                    <div class="gantt-row-subtitle">Research build</div>
+                </div>
+                @for (int w = 1; w <= 10; w++)
+                {
+                    <div class="gantt-cell">
+                        @if (w == 9)
+                        {
+                            <div class="gantt-bar upcoming" style="width: 190%; left: 0;">
+                                Upcoming
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Gantt Footer Legend -->
+    <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; margin-top: 1.25rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <span style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--accent-green);"></span> Active
+                </span>
+                <span style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--accent-amber);"></span> Due soon
+                </span>
+                <span style="display: flex; align-items: center; gap: 0.35rem;">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--text-muted);"></span> Upcoming
+                </span>
+            </div>
+            <div>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-muted);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>All dates stay available offline and sync when your connection returns.</span>
+        </div>
+    </div>
+</div>

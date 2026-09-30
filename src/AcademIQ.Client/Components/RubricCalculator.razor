@@ -1,0 +1,69 @@
+@inject AppStateService State
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <table class="rubric-table">
+        <thead>
+            <tr style="background-color: #FAFAFA;">
+                <th style="width: 38%;">CRITERIA</th>
+                <th style="width: 26%;">SCORE</th>
+                <th style="width: 36%;">NOTES</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var crit in Assignment.RubricCriteria)
+            {
+                var eval = State.ActiveEvaluations.TryGetValue(crit.Id, out var e) ? e : new RubricEvaluation { RubricCriterionId = crit.Id, AwardedPoints = 0 };
+                <tr>
+                    <td>
+                        <div class="rubric-crit-title">
+                            @crit.Title (@eval.AwardedPoints/@((int)crit.MaxPoints))
+                        </div>
+                        <div class="rubric-crit-desc">
+                            @crit.Description
+                        </div>
+                    </td>
+                    <td>
+                        <div class="score-matrix-buttons">
+                            @for (int score = 1; score <= (int)crit.MaxPoints; score++)
+                            {
+                                var currentScore = score;
+                                var isSelected = eval.AwardedPoints == currentScore;
+                                <button type="button" 
+                                        class="matrix-btn @(isSelected ? "selected" : "")"
+                                        @onclick="() => SelectScore(crit.Id, currentScore)">
+                                    @currentScore
+                                </button>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rubric-notes-box">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink: 0;">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <input type="text" 
+                                   value="@eval.FeedbackNotes" 
+                                   placeholder="Add evaluator feedback..."
+                                   @onchange="(evt) => UpdateNotes(crit.Id, eval.AwardedPoints, evt.Value?.ToString() ?? string.Empty)" />
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter] public Assignment Assignment { get; set; } = new();
+
+    private void SelectScore(Guid criterionId, int score)
+    {
+        var existingNotes = State.ActiveEvaluations.TryGetValue(criterionId, out var eval) ? eval.FeedbackNotes : string.Empty;
+        State.SetCriterionScore(criterionId, score, existingNotes);
+    }
+
+    private void UpdateNotes(Guid criterionId, decimal currentScore, string notes)
+    {
+        State.SetCriterionScore(criterionId, currentScore, notes);
+    }
+}

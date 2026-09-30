@@ -1,0 +1,8 @@
+@page "/workspace"
+@page "/submission/{SubmissionId}"
+
+<MarkdownWorkspace />
+
+@code {
+    [Parameter] public string? SubmissionId { get; set; }
+}

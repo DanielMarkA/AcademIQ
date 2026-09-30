@@ -1,0 +1,73 @@
+@inject AppStateService State
+
+<div class="card" style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem; margin-bottom: 1rem;">
+        <h3 style="font-family: var(--font-serif); font-size: 1.1rem; color: var(--text-primary); margin: 0;">Score Breakdown</h3>
+        <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">100% weighted</span>
+    </div>
+
+    <!-- Radial Progress SVG Ring -->
+    <div class="radial-score-container">
+        <svg width="170" height="170" viewBox="0 0 170 170" class="radial-score-svg">
+            <!-- Background track -->
+            <circle cx="85" cy="85" r="70" stroke-width="12" fill="none" class="radial-score-bg" />
+            <!-- Progress Arc -->
+            <circle cx="85" cy="85" r="70" stroke-width="12" fill="none" class="radial-score-progress"
+                    stroke-dasharray="@Circumference"
+                    stroke-dashoffset="@DashOffset" />
+        </svg>
+
+        <div class="radial-score-content">
+            <span class="radial-score-label">Final Score</span>
+            <div class="radial-score-number">@EarnedPoints/@MaxPoints</div>
+            <span class="radial-score-grade">(@ScoreDto.LetterGrade)</span>
+        </div>
+    </div>
+
+    <!-- Assessment Metadata -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin: 1rem 0; font-size: 0.85rem; color: var(--text-muted);">
+        <span>@CriteriaAssessedCount criteria assessed</span>
+        <strong style="color: var(--accent-green);">@ScoreDto.Percentage%</strong>
+    </div>
+
+    <!-- Generate PDF Action -->
+    <button class="btn btn-primary" style="width: 100%; gap: 0.5rem; background-color: var(--primary-navy);" @onclick="OnGeneratePdf">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Generate PDF Grade Report
+    </button>
+</div>
+
+@code {
+    [Parameter] public EvaluationResultDto ScoreDto { get; set; } = new();
+    [Parameter] public int CriteriaAssessedCount { get; set; } = 3;
+    [Parameter] public EventCallback OnGeneratePdfClicked { get; set; }
+
+    private const double Radius = 70;
+    private const double Circumference = 2 * Math.PI * Radius;
+
+    private decimal EarnedPoints => ScoreDto.TotalAwardedScore;
+    private decimal MaxPoints => ScoreDto.MaxPossibleScore > 0 ? ScoreDto.MaxPossibleScore : 15m;
+
+    private double DashOffset
+    {
+        get
+        {
+            var ratio = MaxPoints > 0 ? (double)(EarnedPoints / MaxPoints) : 0;
+            if (ratio > 1) ratio = 1;
+            if (ratio < 0) ratio = 0;
+            return Circumference * (1 - ratio);
+        }
+    }
+
+    private async Task OnGeneratePdf()
+    {
+        if (OnGeneratePdfClicked.HasDelegate)
+        {
+            await OnGeneratePdfClicked.InvokeAsync();
+        }
+    }
+}

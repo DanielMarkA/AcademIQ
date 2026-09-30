@@ -1,0 +1,78 @@
+@inject AppStateService State
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<header class="academiq-navbar">
+    <div class="nav-left">
+        <a href="/" class="brand-logo">
+            <div class="brand-icon">A</div>
+            <span class="brand-name">AcademIQ</span>
+        </a>
+
+        <ul class="nav-links">
+            <li>
+                <NavLink class="nav-link-item" href="courses" Match="NavLinkMatch.Prefix">
+                    My Courses
+                </NavLink>
+            </li>
+            <li>
+                <NavLink class="nav-link-item" href="activity">
+                    Activity
+                </NavLink>
+            </li>
+            <li>
+                <NavLink class="nav-link-item" href="sync">
+                    Saved &amp; Sync
+                </NavLink>
+            </li>
+            <li>
+                <NavLink class="nav-link-item" href="" Match="NavLinkMatch.All">
+                    Grading Hub
+                </NavLink>
+            </li>
+        </ul>
+    </div>
+
+    <div class="nav-right">
+        <!-- Offline Status Pill -->
+        <button class="status-pill available-offline" style="cursor: pointer; border: 1px solid var(--accent-green-border);" @onclick="State.ToggleOfflineMode" title="Click to toggle simulated connection">
+            <span class="pulse-dot"></span>
+            <span>@(State.IsOfflineMode ? "Available offline" : "Online & Synced")</span>
+        </button>
+
+        <!-- User Profile Pill / Role Switcher -->
+        <div class="user-badge" @onclick="ToggleUserRole" title="Click to switch between Student (Maya Chen) and Instructor (Prof. Lee)">
+            <div class="user-info-text">
+                <div class="user-role-label">@State.CurrentUser.Role.ToString().ToUpper()</div>
+                <div class="user-name">@State.CurrentUser.FullName</div>
+            </div>
+            <div class="user-avatar">
+                @(State.CurrentUser.Role == UserRole.Instructor ? "PL" : "MC")
+            </div>
+        </div>
+    </div>
+</header>
+
+@code {
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private void ToggleUserRole()
+    {
+        if (State.CurrentUser.Role == UserRole.Student)
+        {
+            State.SwitchUser(UserRole.Instructor);
+        }
+        else
+        {
+            State.SwitchUser(UserRole.Student);
+        }
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}

@@ -1,0 +1,126 @@
+@page "/login"
+@layout LoginLayout
+@inject NavigationManager Navigation
+@inject AppStateService State
+
+<div style="min-height: 100vh; display: grid; grid-template-columns: 1.15fr 1fr; background-color: #F8FAFC;">
+    <!-- Left Hero Brand Column -->
+    <div style="background: linear-gradient(135deg, #102A4E 0%, #16325B 50%, #0B192C 100%); color: #ffffff; padding: 4rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;">
+        <!-- Background architectural subtle accents -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.08; background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 24px 24px; pointer-events: none;"></div>
+
+        <div>
+            <!-- Brand -->
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 4rem;">
+                <div style="width: 36px; height: 36px; border-radius: 8px; background-color: #ffffff; color: var(--primary-navy); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700;">
+                    A
+                </div>
+                <span style="font-family: var(--font-serif); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.01em;">AcademIQ</span>
+            </div>
+
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background-color: rgba(255,255,255,0.12); padding: 0.35rem 0.85rem; border-radius: 20px; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 1.5rem; backdrop-filter: blur(4px);">
+                <span>📡</span> COURSEWORK THAT TRAVELS WITH YOU
+            </div>
+
+            <h1 style="font-family: var(--font-serif); font-size: 3rem; line-height: 1.15; margin-bottom: 1.5rem; color: #ffffff; max-width: 500px;">
+                Keep learning, even when the connection drops.
+            </h1>
+
+            <p style="color: #CBD5E1; font-size: 1.05rem; line-height: 1.6; max-width: 480px; margin-bottom: 2.5rem;">
+                Read course materials, continue drafts, and review your schedule wherever you are. AcademIQ keeps your recent work close at hand.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background-color: rgba(30, 126, 90, 0.4); color: #86EFAC; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">✔</div>
+                    <span>Course materials ready when you need them</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background-color: rgba(30, 126, 90, 0.4); color: #86EFAC; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">✔</div>
+                    <span>Drafts saved safely on this device</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background-color: rgba(30, 126, 90, 0.4); color: #86EFAC; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">✔</div>
+                    <span>Updates sent when you reconnect</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="font-size: 0.8rem; color: #94A3B8; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
+            Designed for focused study across campus, at home, and everywhere in between.
+        </div>
+    </div>
+
+    <!-- Right Login Form Column -->
+    <div style="display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <div class="card" style="max-width: 440px; width: 100%; padding: 2.5rem; box-shadow: var(--shadow-lg); border-radius: var(--radius-xl);">
+            <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+                WELCOME BACK
+            </div>
+            <h2 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 0.4rem;">
+                Sign in to AcademIQ
+            </h2>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 2rem;">
+                Use your university account to continue your coursework.
+            </p>
+
+            <div class="form-group">
+                <label class="form-label">UNIVERSITY EMAIL</label>
+                <input type="email" class="form-input" @bind="Email" placeholder="maya.chen@northbridge.edu" />
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">PASSWORD</label>
+                <input type="password" class="form-input" @bind="Password" placeholder="••••••••••••" />
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; margin-bottom: 1.75rem;">
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer; color: var(--text-secondary);">
+                    <input type="checkbox" checked />
+                    Remember this account
+                </label>
+                <a href="#" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">Forgot password?</a>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; padding: 0.75rem; background-color: var(--primary-navy); font-size: 0.95rem; margin-bottom: 1.25rem; gap: 0.5rem;" @onclick="HandleSignIn">
+                Sign In &rarr;
+            </button>
+
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem;">
+                <div style="flex: 1; height: 1px; background-color: var(--border-subtle);"></div>
+                <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">OR</span>
+                <div style="flex: 1; height: 1px; background-color: var(--border-subtle);"></div>
+            </div>
+
+            <button class="btn btn-secondary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; margin-bottom: 1.5rem; gap: 0.5rem;" @onclick="HandleContinueOffline">
+                📡 Continue offline
+            </button>
+
+            <div style="background-color: var(--accent-green-light); border: 1px solid var(--accent-green-border); border-radius: var(--radius-md); padding: 0.85rem 1rem; font-size: 0.82rem; color: var(--accent-green); display: flex; align-items: flex-start; gap: 0.6rem; margin-bottom: 1.5rem;">
+                <span>🛡️</span>
+                <span>Returning users can continue without a connection. Your drafts and recent changes remain saved on this device.</span>
+            </div>
+
+            <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+                Need help accessing your account? <a href="#" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">Contact university support</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string Email { get; set; } = "maya.chen@northbridge.edu";
+    private string Password { get; set; } = "password123";
+
+    private void HandleSignIn()
+    {
+        State.IsOfflineMode = false;
+        Navigation.NavigateTo("/");
+    }
+
+    private void HandleContinueOffline()
+    {
+        State.IsOfflineMode = true;
+        Navigation.NavigateTo("/");
+    }
+}

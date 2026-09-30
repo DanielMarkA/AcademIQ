@@ -1,0 +1,206 @@
+@inject AppStateService State
+@inject NavigationManager Navigation
+
+<div style="margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <button class="btn btn-secondary btn-sm" @onclick="GoBackToAssignment" style="gap: 0.4rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Back to assignment
+        </button>
+        <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--text-muted);">
+                CS-401 · LAB REPORT 3
+            </div>
+            <h1 style="font-size: 1.45rem; font-family: var(--font-serif); margin: 0;">
+                @(State.ActiveDraft?.AssignmentTitle ?? "Lab Report 3 Draft")
+            </h1>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="status-pill offline-ready" style="font-size: 0.8rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Saved on this device
+        </div>
+        <button class="btn btn-secondary btn-sm" @onclick="ToggleFullPreview">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            Preview submission
+        </button>
+        <button class="btn btn-primary btn-sm" @onclick="SubmitAssignment" style="background-color: var(--primary-navy);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+            Submit Assignment
+        </button>
+    </div>
+</div>
+
+<!-- Editor & Formatting Toolbar -->
+<div class="editor-toolbar" style="border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: 1px solid var(--border-subtle); border-bottom: none;">
+    <div class="toolbar-group">
+        <select class="form-select" style="width: 120px; padding: 0.25rem 0.5rem; font-size: 0.82rem; height: 32px;" @onchange="OnFormatStyleSelected">
+            <option value="p">Body text</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+        </select>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("# ")' title="Heading">H</button>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("**", "**")' title="Bold"><strong>B</strong></button>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("*", "*")' title="Italic"><em>I</em></button>
+        <span style="color: var(--border-subtle);">|</span>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("- ")' title="Bullet List">•</button>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("1. ")' title="Numbered List">1.</button>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("[", "](url)")' title="Link">🔗</button>
+        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("`", "`")' title="Code">&lt;&gt;</button>
+        <button type="button" class="tool-btn" @onclick="InsertTable" title="Table">📊</button>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+        <span>@(State.ActiveDraft?.WordCount ?? 842) / 1,600 words</span>
+        <span class="badge badge-slate">Markdown + Preview</span>
+    </div>
+</div>
+
+<!-- Main Workspace 3-Column Split -->
+<div class="workspace-layout" style="border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+    <!-- Column 1: Document Outline -->
+    <div class="workspace-outline">
+        <div class="outline-title">Document Outline</div>
+        <div class="outline-item">1 Introduction</div>
+        <div class="outline-item">2 Method</div>
+        <div class="outline-item indent-1">2.1 Test environment</div>
+        <div class="outline-item active">3 Results</div>
+        <div class="outline-item indent-1">3.1 Recovery time</div>
+        <div class="outline-item">4 Discussion</div>
+        <div class="outline-item indent-1">4.1 Limitations</div>
+        <div class="outline-item">5 References</div>
+
+        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
+            <div class="progress-bar-container" style="margin-bottom: 0.4rem;">
+                <div class="progress-bar-fill" style="width: 62%;"></div>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">5 of 8 sections drafted</span>
+        </div>
+    </div>
+
+    <!-- Column 2: Raw Markdown Editor (Dark) -->
+    <div class="workspace-editor-pane">
+        <div class="pane-header dark">
+            <span>Markdown</span>
+            <span style="font-family: var(--font-mono); font-size: 0.7rem; color: #64748B;">Line 24, column 18</span>
+        </div>
+        <textarea class="markdown-textarea" 
+                  value="@MarkdownContent" 
+                  @oninput="OnContentChanged"
+                  placeholder="Type your markdown coursework here..."></textarea>
+    </div>
+
+    <!-- Column 3: HTML Live Preview (Light) -->
+    <div class="workspace-preview-pane">
+        <div class="pane-header light">
+            <span>HTML Preview</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted);">Live Rendering</span>
+        </div>
+        <div class="rendered-preview-content">
+            @((MarkupString)RenderedHtml)
+        </div>
+    </div>
+</div>
+
+<!-- Workspace Bottom Bar -->
+<div class="card" style="margin-top: 1rem; padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
+    <div style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.85rem; color: var(--text-secondary);">
+        <div style="width: 28px; height: 28px; border-radius: 6px; background-color: var(--accent-green-light); color: var(--accent-green); display: flex; align-items: center; justify-content: center;">
+            💾
+        </div>
+        <div>
+            <strong>Saved on this device</strong>
+            <span style="color: var(--text-muted); font-size: 0.78rem; display: block;">Last saved a few seconds ago · Ready to sync when connected</span>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem;">
+        <span style="font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
+            📎 <strong>2 attachments</strong> (recovery-chart.png, results.csv)
+        </span>
+        <button class="btn btn-secondary btn-sm" @onclick="AddAttachmentModal">
+            + Add attachment
+        </button>
+    </div>
+</div>
+
+@code {
+    private string MarkdownContent { get; set; } = string.Empty;
+    private string RenderedHtml { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        MarkdownContent = State.ActiveDraft?.MarkdownContent ?? string.Empty;
+        UpdatePreview();
+    }
+
+    private void OnContentChanged(ChangeEventArgs e)
+    {
+        MarkdownContent = e.Value?.ToString() ?? string.Empty;
+        State.SaveActiveDraft(MarkdownContent);
+        UpdatePreview();
+    }
+
+    private void UpdatePreview()
+    {
+        var pipeline = new Markdig.MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        RenderedHtml = Markdig.Markdown.ToHtml(MarkdownContent, pipeline);
+    }
+
+    private void InsertMarkdown(string prefix, string suffix = "")
+    {
+        MarkdownContent += $"\n{prefix}Sample Text{suffix}";
+        State.SaveActiveDraft(MarkdownContent);
+        UpdatePreview();
+    }
+
+    private void InsertTable()
+    {
+        MarkdownContent += "\n\n| Item | Metric | Status |\n| :--- | :--- | :--- |\n| Benchmark 1 | 84 ms | Passed |\n| Benchmark 2 | 127 ms | Passed |\n";
+        State.SaveActiveDraft(MarkdownContent);
+        UpdatePreview();
+    }
+
+    private void OnFormatStyleSelected(ChangeEventArgs e)
+    {
+        var tag = e.Value?.ToString();
+        if (tag == "h1") InsertMarkdown("# ");
+        else if (tag == "h2") InsertMarkdown("## ");
+        else if (tag == "h3") InsertMarkdown("### ");
+    }
+
+    private void GoBackToAssignment()
+    {
+        Navigation.NavigateTo("/assignment/1");
+    }
+
+    private void ToggleFullPreview()
+    {
+        // Toggle view
+    }
+
+    private void SubmitAssignment()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void AddAttachmentModal()
+    {
+        // Attachment modal trigger
+    }
+}

@@ -1,0 +1,175 @@
+@page "/"
+@page "/dashboard"
+@inject AppStateService State
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<!-- Hub Header Banner -->
+<div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+            <h1 style="font-family: var(--font-serif); font-size: 1.85rem; color: var(--text-primary); margin: 0;">
+                Instructor Grading Hub
+            </h1>
+            <span class="badge badge-blue" style="font-weight: 700; font-size: 0.75rem; text-transform: uppercase;">
+                CS-401 · LAB 3
+            </span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+            Evaluate submission against the published rubric · Changes are saved on your device until sync.
+        </p>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1.75rem; font-size: 0.82rem;">
+        <div>
+            <div style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">STUDENT</div>
+            <div style="font-weight: 600; color: var(--text-primary);">Maya Chen · #20418</div>
+        </div>
+        <div>
+            <div style="text-transform: uppercase; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">SUBMITTED</div>
+            <div style="font-weight: 600; color: var(--text-primary);">Sep 28 · 14:32</div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Assessment Grid: Rubric Matrix (Left) + Radial Score Breakdown (Right) -->
+<div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    @if (CurrentAssignment != null)
+    {
+        <RubricCalculator Assignment="CurrentAssignment" />
+        <RadialScoreChart ScoreDto="@CurrentScore" 
+                          CriteriaAssessedCount="@CurrentAssignment.RubricCriteria.Count"
+                          OnGeneratePdfClicked="HandleGeneratePdf" />
+    }
+</div>
+
+<!-- Bottom Grid: My Submission Drafts (Left) + Course Milestone Tracker (Right) -->
+<div style="display: grid; grid-template-columns: 1.35fr 1fr; gap: 1.5rem;">
+    <!-- Submission Drafter Preview Card -->
+    <div class="card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+        <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-primary); margin: 0;">My Submission Drafts</h3>
+                <span style="font-size: 0.8rem; color: var(--text-muted);">Offline-first writing workspace</span>
+            </div>
+            <span class="status-pill offline-ready" style="font-size: 0.75rem; padding: 0.2rem 0.6rem;">
+                OFFLINE
+            </span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 140px 1fr 1fr; min-height: 260px;">
+            <!-- Draft List Sidebar -->
+            <div style="border-right: 1px solid var(--border-subtle); padding: 0.75rem; background-color: #FAFAFA; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem;">
+                        ACTIVE DRAFTS
+                    </div>
+                    @foreach (var draft in State.Drafts)
+                    {
+                        var isActive = State.ActiveDraft?.Id == draft.Id;
+                        <div style="padding: 0.45rem 0.55rem; border-radius: 6px; margin-bottom: 0.25rem; cursor: pointer; background-color: @(isActive ? "#FFFFFF" : "transparent"); border: @(isActive ? "1px solid var(--border-subtle)" : "1px solid transparent");"
+                             @onclick="() => SelectDraft(draft)">
+                            <div style="font-weight: 600; font-size: 0.82rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.35rem;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: @(draft.SyncStatus == SyncStatus.Synced ? "var(--accent-green)" : "var(--accent-blue)");"></span>
+                                @draft.AssignmentTitle
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--text-muted); padding-left: 0.7rem;">
+                                @(draft.SyncStatus == SyncStatus.Synced ? "Submitted" : "Editing offline")
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 0.5rem;">
+                    2.4 MB stored locally
+                </div>
+            </div>
+
+            <!-- Raw Markdown Preview Pane -->
+            <div style="background-color: #0F172A; color: #F8FAFC; padding: 1rem; border-right: 1px solid #1E293B; font-family: var(--font-mono); font-size: 0.75rem; overflow-y: auto; max-height: 260px;">
+                <div style="color: #64748B; font-size: 0.68rem; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                    <span>RAW MARKDOWN</span>
+                    <span>.md</span>
+                </div>
+                <pre style="white-space: pre-wrap; margin: 0; line-height: 1.4;">@(State.ActiveDraft?.MarkdownContent ?? "# Lab Report 3\n## Method\nWe implemented a service worker...")</pre>
+            </div>
+
+            <!-- HTML Preview Pane -->
+            <div style="background-color: #FFFFFF; padding: 1rem; font-size: 0.8rem; overflow-y: auto; max-height: 260px;">
+                <div style="color: var(--text-muted); font-size: 0.68rem; text-transform: uppercase; margin-bottom: 0.5rem;">
+                    HTML PREVIEW
+                </div>
+                <div class="rendered-preview-content" style="padding: 0; font-size: 0.82rem;">
+                    @((MarkupString)GetRenderedActiveDraftHtml())
+                </div>
+            </div>
+        </div>
+
+        <!-- Draft Bottom Status Bar -->
+        <div style="background-color: #F8FAFC; border-top: 1px solid var(--border-subtle); padding: 0.65rem 1rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--text-secondary);">
+            <div style="display: flex; align-items: center; gap: 0.4rem; color: var(--accent-green); font-weight: 600;">
+                <span style="font-size: 0.9rem;">💾</span>
+                Auto-saving on your device
+            </div>
+            <div style="color: var(--text-muted);">
+                Saved 2 sec ago · Sync pending
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Milestone Tracker Card -->
+    <GanttTimeline />
+</div>
+
+@if (ShowPdfModal)
+{
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(15, 23, 42, 0.6); display: flex; align-items: center; justify-content: center; z-index: 999;">
+        <div class="card" style="max-width: 500px; width: 90%; background-color: #ffffff; padding: 2rem; border-radius: var(--radius-lg);">
+            <h3 style="font-family: var(--font-serif); margin-bottom: 0.75rem;">PDF Report Generated</h3>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                Grade report for <strong>Maya Chen (#20418)</strong> on <strong>CS-401 Lab Report 3</strong> has been compiled locally.
+            </p>
+            <div style="background-color: var(--bg-surface-secondary); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem; font-size: 0.85rem;">
+                <div>Score: <strong>@CurrentScore.TotalAwardedScore / @CurrentScore.MaxPossibleScore (@CurrentScore.Percentage%)</strong></div>
+                <div>Grade: <strong>@CurrentScore.LetterGrade (GPA: @CurrentScore.GpaValue)</strong></div>
+                <div>Status: <span class="badge badge-green">Passed</span></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button class="btn btn-secondary btn-sm" @onclick="() => ShowPdfModal = false">Close</button>
+                <button class="btn btn-primary btn-sm" @onclick="() => ShowPdfModal = false">Download PDF</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private Assignment? CurrentAssignment => State.Assignments.FirstOrDefault();
+    private EvaluationResultDto CurrentScore => CurrentAssignment != null ? State.GetCurrentEvaluationScore(CurrentAssignment) : new();
+    private bool ShowPdfModal { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private void SelectDraft(SubmissionDraft draft)
+    {
+        State.ActiveDraft = draft;
+    }
+
+    private string GetRenderedActiveDraftHtml()
+    {
+        if (string.IsNullOrEmpty(State.ActiveDraft?.MarkdownContent)) return "<p>No content</p>";
+        var pipeline = new Markdig.MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        return Markdig.Markdown.ToHtml(State.ActiveDraft.MarkdownContent, pipeline);
+    }
+
+    private void HandleGeneratePdf()
+    {
+        ShowPdfModal = true;
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
+}
