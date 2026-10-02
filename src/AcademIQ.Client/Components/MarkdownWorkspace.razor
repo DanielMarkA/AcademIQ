@@ -1,5 +1,6 @@
 @inject AppStateService State
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 @implements IDisposable
 
 <div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -20,21 +21,34 @@
         </div>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
         <span class="badge-status-green py-1 px-3 text-xs">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            @(State.ActiveDraft?.SyncStatus == SyncStatus.Synced ? "Submitted" : "Saved on this device")
+            @(State.ActiveDraft?.SyncStatus == SyncStatus.Synced ? "Submitted" : "Saved on device")
         </span>
-        <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="ToggleFullPreview">
+
+        <button class="btn-secondary !py-1.5 !px-2.5 text-xs gap-1" @onclick="DownloadDraftMarkdown" title="Download as .md file">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Export .md
+        </button>
+
+        <button class="btn-secondary !py-1.5 !px-2.5 text-xs gap-1" @onclick="SaveSnapshot" title="Save snapshot to version history">
+            📸 Snapshot (@Snapshots.Count)
+        </button>
+
+        <button class="btn-secondary !py-1.5 !px-2.5 text-xs" @onclick="ToggleFullPreview">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
             </svg>
-            @(IsPreviewOnly ? "Split View" : "Preview submission")
+            @(IsPreviewOnly ? "Split View" : "Preview")
         </button>
-        <button class="btn-primary !py-1.5 !px-3 text-xs" @onclick="SubmitAssignment">
+
+        <button class="btn-primary !py-1.5 !px-3 text-xs" @onclick="RequestSubmitConfirmation">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
             </svg>
@@ -43,6 +57,7 @@
     </div>
 </div>
 
+<!-- Formatting Toolbar -->
 <div class="bg-white border border-slate-200 rounded-t-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2 border-b-0 shadow-2xs">
     <div class="flex items-center gap-1">
         <select class="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700 focus:outline-none" @onchange="OnFormatStyleSelected">
@@ -52,8 +67,8 @@
             <option value="h3">Heading 3</option>
         </select>
         <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs font-serif font-bold text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("# ")' title="Heading">H</button>
-        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs font-bold text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("**", "**")' title="Bold">B</button>
-        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs italic font-serif text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("*", "*")' title="Italic">I</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs font-bold text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("**", "**")' title="Bold (Ctrl+B)">B</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs italic font-serif text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("*", "*")' title="Italic (Ctrl+I)">I</button>
         <span class="text-slate-300 mx-1">|</span>
         <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("- ")' title="Bullet List">•</button>
         <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("1. ")' title="Numbered List">1.</button>
@@ -62,12 +77,18 @@
         <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick="InsertTable" title="Table">📊</button>
     </div>
 
-    <div class="flex items-center gap-3 text-xs text-slate-500">
-        <span>@(State.ActiveDraft?.WordCount ?? 842) / 1,600 words</span>
-        <span class="badge-status-slate text-[11px]">Markdown + Preview</span>
+    <div class="flex items-center gap-4 text-xs text-slate-500">
+        <div class="flex items-center gap-2">
+            <span class="font-semibold text-slate-700">@WordCount</span> / @TargetWordCount words
+            <div class="w-16 h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full @(WordCountProgress >= 100 ? "bg-academic-green-500" : "bg-academic-blue-500") transition-all" style="width: @Math.Min(100, WordCountProgress)%"></div>
+            </div>
+        </div>
+        <span>~@EstimatedReadingMinutes min read</span>
     </div>
 </div>
 
+<!-- Main Editor & Outline Grid -->
 <div class="grid grid-cols-1 @(IsPreviewOnly ? "md:grid-cols-1" : "md:grid-cols-[200px_1fr_1fr]") bg-white border border-slate-200 rounded-b-2xl overflow-hidden min-h-[560px] shadow-sm">
     @if (!IsPreviewOnly)
     {
@@ -84,24 +105,42 @@
                     <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("### Limitations\n")'>4.1 Limitations</div>
                     <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("## References\n")'>5 References</div>
                 </div>
+
+                @if (Snapshots.Count > 0)
+                {
+                    <div class="mt-6 pt-4 border-t border-slate-200">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Snapshots</div>
+                        <div class="space-y-1 text-xs">
+                            @foreach (var snap in Snapshots)
+                            {
+                                <div class="p-1.5 rounded bg-white border border-slate-200 flex items-center justify-between text-[11px] hover:bg-slate-50 cursor-pointer"
+                                     @onclick="() => RestoreSnapshot(snap)">
+                                    <span class="font-medium text-slate-700 truncate">@snap.Title</span>
+                                    <span class="text-slate-400 text-[9px] shrink-0">@snap.Timestamp.ToString("h:mm tt")</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
 
             <div class="pt-4 border-t border-slate-200">
                 <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mb-1.5">
-                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 62%;"></div>
+                    <div class="h-full bg-academic-green-500 rounded-full" style="width: @Math.Min(100, WordCountProgress)%;"></div>
                 </div>
-                <div class="text-[11px] text-slate-400">5 of 8 sections drafted</div>
+                <div class="text-[11px] text-slate-400">@WordCount / @TargetWordCount words (@WordCountProgress%)</div>
             </div>
         </div>
 
         <div class="bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800">
             <div class="bg-slate-950/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between border-b border-slate-800">
-                <span>Markdown</span>
-                <span class="font-mono text-[10px] text-slate-500">Line @(MarkdownContent.Split('\n').Length), @MarkdownContent.Length chars</span>
+                <span>Markdown Editor</span>
+                <span class="font-mono text-[10px] text-slate-500">Shortcuts: Ctrl+B, Ctrl+I, Ctrl+S</span>
             </div>
             <textarea class="flex-1 w-full p-4 bg-transparent text-slate-100 font-mono text-xs leading-relaxed resize-none focus:outline-none placeholder-slate-600 min-h-[460px]"
                       value="@MarkdownContent" 
                       @oninput="OnContentChanged"
+                      @onkeydown="HandleEditorKeyDown"
                       placeholder="Type your coursework in markdown..."></textarea>
         </div>
     }
@@ -117,14 +156,15 @@
     </div>
 </div>
 
+<!-- Bottom Status Bar -->
 <div class="card-base mt-4 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
     <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-academic-green-50 text-academic-green-600 flex items-center justify-center text-sm font-bold">
             💾
         </div>
         <div>
-            <div class="text-xs font-semibold text-slate-900">Saved on this device</div>
-            <div class="text-[11px] text-slate-400">Last saved a few seconds ago · Ready to sync when connected</div>
+            <div class="text-xs font-semibold text-slate-900">Auto-saved on this device</div>
+            <div class="text-[11px] text-slate-400">Version @(State.ActiveDraft?.Version ?? 1) · Ready to sync when connected</div>
         </div>
     </div>
 
@@ -138,11 +178,28 @@
     </div>
 </div>
 
+<ConfirmDialog IsOpen="@ShowSubmitConfirm"
+               Title="Submit Coursework"
+               Message="Are you ready to submit this draft for grading? It will be marked as finalized and queued for sync."
+               ConfirmText="Submit Now"
+               CancelText="Keep Editing"
+               OnConfirmed="ConfirmSubmitAssignment"
+               OnCancelled="() => ShowSubmitConfirm = false" />
+
 @code {
     private string MarkdownContent { get; set; } = string.Empty;
     private string RenderedHtml { get; set; } = string.Empty;
     private bool IsPreviewOnly { get; set; } = false;
+    private bool ShowSubmitConfirm { get; set; } = false;
+    private const int TargetWordCount = 1600;
     private List<string> Attachments { get; set; } = new() { "recovery-chart.png", "results.csv" };
+    private List<DraftSnapshot> Snapshots { get; set; } = new();
+
+    private record DraftSnapshot(string Title, string Content, DateTime Timestamp);
+
+    private int WordCount => State.ActiveDraft?.WordCount ?? 0;
+    private int WordCountProgress => TargetWordCount > 0 ? (int)Math.Round(((double)WordCount / TargetWordCount) * 100) : 0;
+    private int EstimatedReadingMinutes => Math.Max(1, (int)Math.Ceiling(WordCount / 200.0));
 
     protected override void OnInitialized()
     {
@@ -203,6 +260,57 @@
         else if (tag == "h3") InsertMarkdown("### ");
     }
 
+    private void HandleEditorKeyDown(KeyboardEventArgs e)
+    {
+        if (e.CtrlKey && (e.Key == "s" || e.Key == "S"))
+        {
+            State.SaveActiveDraft(MarkdownContent);
+            State.TriggerToast("Draft saved locally");
+        }
+        else if (e.CtrlKey && (e.Key == "b" || e.Key == "B"))
+        {
+            InsertMarkdown("**", "**");
+        }
+        else if (e.CtrlKey && (e.Key == "i" || e.Key == "I"))
+        {
+            InsertMarkdown("*", "*");
+        }
+    }
+
+    private async Task DownloadDraftMarkdown()
+    {
+        var filename = $"{State.ActiveDraft?.AssignmentTitle.Replace(" ", "_") ?? "draft"}.md";
+        await JS.InvokeVoidAsync("academiq.downloadFile", filename, "text/markdown;charset=utf-8", MarkdownContent);
+        State.TriggerToast($"Downloaded {filename}");
+    }
+
+    private void SaveSnapshot()
+    {
+        var title = $"Snapshot {Snapshots.Count + 1}";
+        Snapshots.Insert(0, new DraftSnapshot(title, MarkdownContent, DateTime.UtcNow));
+        State.TriggerToast($"Saved {title}");
+    }
+
+    private void RestoreSnapshot(DraftSnapshot snapshot)
+    {
+        MarkdownContent = snapshot.Content;
+        State.SaveActiveDraft(MarkdownContent);
+        UpdatePreview();
+        State.TriggerToast($"Restored {snapshot.Title}");
+    }
+
+    private void RequestSubmitConfirmation()
+    {
+        ShowSubmitConfirm = true;
+    }
+
+    private void ConfirmSubmitAssignment()
+    {
+        ShowSubmitConfirm = false;
+        State.SubmitCurrentDraft();
+        Navigation.NavigateTo("/dashboard");
+    }
+
     private void GoBackToAssignment()
     {
         Navigation.NavigateTo("/assignment/1");
@@ -211,12 +319,6 @@
     private void ToggleFullPreview()
     {
         IsPreviewOnly = !IsPreviewOnly;
-    }
-
-    private void SubmitAssignment()
-    {
-        State.SubmitCurrentDraft();
-        Navigation.NavigateTo("/dashboard");
     }
 
     private void AddAttachmentModal()
@@ -231,3 +333,4 @@
         State.OnChange -= HandleStateChanged;
     }
 }
+

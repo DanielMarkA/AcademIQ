@@ -1,7 +1,10 @@
 @page "/profile"
 @inject AppStateService State
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 @implements IDisposable
+
+<PageTitle>AcademIQ · Profile &amp; Settings</PageTitle>
 
 <div class="mb-6">
     <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
@@ -119,12 +122,12 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <strong class="text-slate-800">Color theme</strong>
-                            <div class="text-slate-400 text-[11px]">Light, dark, or device.</div>
+                            <div class="text-slate-400 text-[11px]">Light or dark theme.</div>
                         </div>
-                        <select class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
-                            <option>Light</option>
-                            <option>Dark</option>
-                            <option>System</option>
+                        <select class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs"
+                                value="@SelectedTheme" @onchange="OnThemeChanged">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
                         </select>
                     </div>
 
@@ -242,7 +245,7 @@
                             <strong class="text-slate-800">Clear saved content</strong>
                             <div class="text-slate-400 text-[11px]">Remove local cache.</div>
                         </div>
-                        <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-600" @onclick="ClearCache">Clear</button>
+                        <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-600" @onclick="() => ShowClearCacheConfirm = true">Clear</button>
                     </div>
                 </div>
             </div>
@@ -292,15 +295,36 @@
                 <strong class="text-red-900">Finished using this device?</strong>
                 <div class="text-slate-500">Sign out of AcademIQ. Saved course content will remain unless removed.</div>
             </div>
-            <button class="btn-secondary !border-red-200 !text-red-700 hover:!bg-red-50 text-xs shrink-0" @onclick='() => Navigation.NavigateTo("/login")'>
+            <button class="btn-secondary !border-red-200 !text-red-700 hover:!bg-red-50 text-xs shrink-0" @onclick="() => ShowSignOutConfirm = true">
                 🚪 Sign Out
             </button>
         </div>
     </div>
 </div>
 
+<ConfirmDialog IsOpen="@ShowClearCacheConfirm"
+               Title="Clear Offline Cache"
+               Message="This will remove locally stored course materials and cached data. Drafts will remain saved."
+               ConfirmText="Clear Cache"
+               CancelText="Keep Files"
+               IsDanger="true"
+               OnConfirmed="ConfirmClearCache"
+               OnCancelled="() => ShowClearCacheConfirm = false" />
+
+<ConfirmDialog IsOpen="@ShowSignOutConfirm"
+               Title="Sign Out"
+               Message="Are you sure you want to sign out? Your offline drafts will remain on this device."
+               ConfirmText="Sign Out"
+               CancelText="Stay Signed In"
+               IsDanger="true"
+               OnConfirmed="ConfirmSignOut"
+               OnCancelled="() => ShowSignOutConfirm = false" />
+
 @code {
     private string ActiveSection { get; set; } = "account";
+    private string SelectedTheme { get; set; } = "light";
+    private bool ShowClearCacheConfirm { get; set; } = false;
+    private bool ShowSignOutConfirm { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -310,6 +334,13 @@
     private void SaveSettings()
     {
         State.TriggerToast("Profile and preferences saved successfully!");
+    }
+
+    private async Task OnThemeChanged(ChangeEventArgs e)
+    {
+        SelectedTheme = e.Value?.ToString() ?? "light";
+        await JS.InvokeVoidAsync("academiq.setDarkMode", SelectedTheme == "dark");
+        State.TriggerToast($"Theme switched to {SelectedTheme}");
     }
 
     private void ChangePhoto()
@@ -327,9 +358,16 @@
         State.TriggerToast("Redirecting to university account portal...", "info");
     }
 
-    private void ClearCache()
+    private void ConfirmClearCache()
     {
+        ShowClearCacheConfirm = false;
         State.TriggerToast("Cleared offline temporary cache");
+    }
+
+    private void ConfirmSignOut()
+    {
+        ShowSignOutConfirm = false;
+        Navigation.NavigateTo("/login");
     }
 
     public void Dispose()
