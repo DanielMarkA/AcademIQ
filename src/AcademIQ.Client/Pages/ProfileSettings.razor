@@ -2,233 +2,215 @@
 @inject AppStateService State
 @inject NavigationManager Navigation
 
-<!-- Top Header -->
-<div style="margin-bottom: 1.5rem;">
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-        ACCOUNT SETTINGS
+<!-- Header -->
+<div class="mb-6">
+    <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
+        Account Settings
     </div>
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h1 style="font-family: var(--font-serif); font-size: 2.15rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+            <h1 class="font-serif text-3xl font-bold text-slate-900 mb-1">
                 Profile &amp; Settings
             </h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+            <p class="text-sm text-slate-500">
                 Manage your account, preferences, and how AcademIQ works on this device.
             </p>
         </div>
 
-        <button class="btn btn-primary" style="background-color: var(--primary-navy); gap: 0.4rem;" @onclick="SaveSettings">
+        <button class="btn-primary" @onclick="SaveSettings">
             ✔ Save changes
         </button>
     </div>
 </div>
 
 <!-- Profile Big Banner (Navy Card) -->
-<div class="card" style="background-color: var(--primary-navy); color: #ffffff; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-    <div style="display: flex; align-items: center; gap: 1.25rem;">
-        <div style="width: 64px; height: 64px; border-radius: 50%; background-color: #ffffff; color: var(--primary-navy); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; font-family: var(--font-serif);">
+<div class="bg-navy-800 text-white rounded-2xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-md border border-navy-700">
+    <div class="flex items-center gap-5">
+        <div class="w-16 h-16 rounded-full bg-white text-navy-800 flex items-center justify-center font-serif font-bold text-2xl shadow-inner shrink-0">
             @(State.CurrentUser.Role == UserRole.Instructor ? "PL" : "MC")
         </div>
         <div>
-            <h2 style="color: #ffffff; font-size: 1.6rem; margin: 0 0 0.2rem 0; font-family: var(--font-serif);">
+            <h2 class="font-serif text-2xl font-bold text-white mb-1">
                 @State.CurrentUser.FullName
             </h2>
-            <div style="color: #CBD5E1; font-size: 0.88rem;">
+            <div class="text-xs sm:text-sm text-slate-300">
                 @(State.CurrentUser.Role == UserRole.Instructor ? "Associate Professor · Computer Science" : "B.S. Software Engineering · Student #20418")
             </div>
-            <div style="color: #94A3B8; font-size: 0.78rem;">Northbridge University · School of Engineering</div>
+            <div class="text-xs text-slate-400 mt-0.5">Northbridge University · School of Engineering</div>
         </div>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <button class="btn btn-secondary btn-sm" style="background-color: #ffffff; color: var(--primary-navy); border: none; gap: 0.35rem;">
+    <div class="flex items-center gap-3 self-end sm:self-auto">
+        <button class="btn-secondary !bg-white !text-navy-800 !border-transparent text-xs font-semibold">
             📷 Change photo
         </button>
-        <button class="btn btn-outline btn-sm" style="color: #ffffff; border-color: rgba(255,255,255,0.4); gap: 0.35rem;">
+        <button class="btn-outline !text-white !border-white/30 hover:!bg-white/10 text-xs">
             ↗ View public profile
         </button>
     </div>
 </div>
 
 <!-- Split Grid: Sidebar Navigation + Settings Cards -->
-<div style="display: grid; grid-template-columns: 220px 1fr; gap: 2rem; margin-bottom: 2rem;">
+<div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8 mb-8">
     <!-- Navigation Sidebar -->
-    <div style="display: flex; flex-direction: column; gap: 0.35rem;">
-        <div class="outline-item active" style="padding: 0.65rem 0.85rem; font-size: 0.9rem;">
+    <div class="space-y-1 text-xs">
+        <div class="px-3 py-2 rounded-xl bg-academic-blue-50 text-academic-blue-600 font-semibold cursor-pointer">
             👤 Account
         </div>
-        <div class="outline-item" style="padding: 0.65rem 0.85rem; font-size: 0.9rem;">
+        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
             🎨 Appearance
         </div>
-        <div class="outline-item" style="padding: 0.65rem 0.85rem; font-size: 0.9rem;">
+        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
             🔔 Notifications
         </div>
-        <div class="outline-item" style="padding: 0.65rem 0.85rem; font-size: 0.9rem;">
+        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
             ☁️ Offline preferences
         </div>
-        <div class="outline-item" style="padding: 0.65rem 0.85rem; font-size: 0.9rem;">
+        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
             🛡️ Privacy
         </div>
-        <div class="outline-item" style="padding: 0.65rem 0.85rem; font-size: 0.9rem;">
+        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
             ♿ Accessibility
         </div>
     </div>
 
     <!-- Main Settings Cards -->
-    <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+    <div class="space-y-6">
         <!-- Account Info -->
-        <div class="card">
-            <h3 style="font-family: var(--font-serif); font-size: 1.25rem; margin-bottom: 0.2rem;">Account</h3>
-            <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem;">Your university profile and sign-in details</p>
+        <div class="card-base p-6">
+            <h3 class="font-serif font-bold text-lg text-slate-900 mb-0.5">Account</h3>
+            <p class="text-xs text-slate-400 mb-5">Your university profile and sign-in details</p>
 
-            <div class="grid-2" style="margin-bottom: 1.25rem;">
-                <div class="form-group">
-                    <label class="form-label">DISPLAY NAME</label>
-                    <input type="text" class="form-input" @bind="State.CurrentUser.FullName" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1">Display Name</label>
+                    <input type="text" class="input-field text-xs" @bind="State.CurrentUser.FullName" />
                 </div>
-                <div class="form-group">
-                    <label class="form-label">UNIVERSITY EMAIL</label>
-                    <input type="email" class="form-input" @bind="State.CurrentUser.Email" />
-                    <span style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.25rem; display: block;">Managed by your university</span>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1">University Email</label>
+                    <input type="email" class="input-field text-xs" @bind="State.CurrentUser.Email" />
+                    <span class="text-[10px] text-slate-400 mt-1 block">Managed by your university</span>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">ROLE</label>
-                    <input type="text" class="form-input" value="@State.CurrentUser.Role.ToString()" disabled />
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1">Role</label>
+                    <input type="text" class="input-field text-xs bg-slate-50 text-slate-500" value="@State.CurrentUser.Role.ToString()" disabled />
                 </div>
-                <div class="form-group">
-                    <label class="form-label">DEPARTMENT</label>
-                    <input type="text" class="form-input" @bind="State.CurrentUser.Department" />
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-slate-500 mb-1">Department</label>
+                    <input type="text" class="input-field text-xs" @bind="State.CurrentUser.Department" />
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 1rem;">
-                <span style="font-size: 0.78rem; color: var(--text-muted);">Password changes are handled through your university account.</span>
-                <button class="btn btn-secondary btn-sm" style="gap: 0.35rem;">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-slate-100 pt-4 text-xs">
+                <span class="text-slate-400">Password changes are handled through your university account.</span>
+                <button class="btn-secondary !py-1.5 !px-3 text-xs">
                     ↗ Manage university account
                 </button>
             </div>
         </div>
 
         <!-- 2x2 Grid: Appearance, Notifications, Offline Preferences, Privacy -->
-        <div class="grid-2">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Appearance -->
-            <div class="card">
-                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Appearance</h3>
-                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.25rem;">Choose a comfortable reading experience</p>
+            <div class="card-base p-5">
+                <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Appearance</h3>
+                <p class="text-xs text-slate-400 mb-4">Choose a comfortable reading experience</p>
 
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="space-y-4 text-xs">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Color theme</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Use light, dark, or device appearance.</div>
+                            <strong class="text-slate-800">Color theme</strong>
+                            <div class="text-slate-400 text-[11px]">Light, dark, or device.</div>
                         </div>
-                        <select class="form-select" style="width: 100px; padding: 0.25rem 0.5rem; font-size: 0.82rem; height: 32px;">
+                        <select class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                             <option>Light</option>
                             <option>Dark</option>
                             <option>System</option>
                         </select>
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Text size</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Increase text throughout AcademIQ.</div>
+                            <strong class="text-slate-800">Text size</strong>
+                            <div class="text-slate-400 text-[11px]">Increase text scaling.</div>
                         </div>
-                        <select class="form-select" style="width: 100px; padding: 0.25rem 0.5rem; font-size: 0.82rem; height: 32px;">
+                        <select class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                             <option>Default</option>
                             <option>Medium</option>
                             <option>Large</option>
                         </select>
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Compact course lists</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Show more items in the same space.</div>
+                            <strong class="text-slate-800">Compact course lists</strong>
+                            <div class="text-slate-400 text-[11px]">Show more items.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
                 </div>
             </div>
 
             <!-- Notifications -->
-            <div class="card">
-                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Notifications</h3>
-                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.25rem;">Control the updates you receive</p>
+            <div class="card-base p-5">
+                <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Notifications</h3>
+                <p class="text-xs text-slate-400 mb-4">Control the updates you receive</p>
 
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="space-y-4 text-xs">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Grades and feedback</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Know when grading is complete.</div>
+                            <strong class="text-slate-800">Grades and feedback</strong>
+                            <div class="text-slate-400 text-[11px]">When grading is done.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Deadline reminders</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Remind me 24 hours before due dates.</div>
+                            <strong class="text-slate-800">Deadline reminders</strong>
+                            <div class="text-slate-400 text-[11px]">24 hours before due dates.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Course announcements</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Updates posted by instructors.</div>
+                            <strong class="text-slate-800">Course announcements</strong>
+                            <div class="text-slate-400 text-[11px]">Instructor posts.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
                 </div>
             </div>
 
             <!-- Offline Preferences -->
-            <div class="card">
-                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Offline preferences</h3>
-                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.25rem;">Choose what is kept on this device</p>
+            <div class="card-base p-5">
+                <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Offline preferences</h3>
+                <p class="text-xs text-slate-400 mb-4">Choose what is kept on this device</p>
 
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="space-y-4 text-xs">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Save active courses automatically</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Keep current lessons and assignments ready.</div>
+                            <strong class="text-slate-800">Save active courses automatically</strong>
+                            <div class="text-slate-400 text-[11px]">Keep materials cached.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Update saved content on Wi-Fi</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Refresh course materials when Wi-Fi is available.</div>
+                            <strong class="text-slate-800">Update on Wi-Fi</strong>
+                            <div class="text-slate-400 text-[11px]">Auto refresh over Wi-Fi.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Storage limit</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">AcademIQ can use up to this amount.</div>
+                            <strong class="text-slate-800">Storage limit</strong>
+                            <div class="text-slate-400 text-[11px]">Max local quota.</div>
                         </div>
-                        <select class="form-select" style="width: 100px; padding: 0.25rem 0.5rem; font-size: 0.82rem; height: 32px;">
+                        <select class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs">
                             <option>2 GB</option>
                             <option>5 GB</option>
                             <option>10 GB</option>
@@ -238,103 +220,85 @@
             </div>
 
             <!-- Privacy -->
-            <div class="card">
-                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Privacy</h3>
-                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.25rem;">Manage information stored on this device</p>
+            <div class="card-base p-5">
+                <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Privacy</h3>
+                <p class="text-xs text-slate-400 mb-4">Manage local device history</p>
 
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="space-y-4 text-xs">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Remember recent activity</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Show recently viewed courses and assignments.</div>
+                            <strong class="text-slate-800">Remember recent activity</strong>
+                            <div class="text-slate-400 text-[11px]">Recent navigation items.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Require sign-in after inactivity</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Ask for your password after 30 minutes.</div>
+                            <strong class="text-slate-800">Require sign-in</strong>
+                            <div class="text-slate-400 text-[11px]">After 30 min of inactivity.</div>
                         </div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked />
-                            <span class="toggle-slider"></span>
-                        </label>
+                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="flex items-center justify-between">
                         <div>
-                            <strong style="font-size: 0.88rem;">Clear saved content</strong>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Remove courses and drafts from this device only.</div>
+                            <strong class="text-slate-800">Clear saved content</strong>
+                            <div class="text-slate-400 text-[11px]">Remove local cache.</div>
                         </div>
-                        <button class="btn btn-outline btn-sm">Review</button>
+                        <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-600">Review</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Accessibility -->
-        <div class="card">
-            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Accessibility</h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.25rem;">Adjust motion, contrast, and navigation support</p>
+        <div class="card-base p-5">
+            <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Accessibility</h3>
+            <p class="text-xs text-slate-400 mb-4">Adjust motion, contrast, and navigation support</p>
 
-            <div class="grid-2" style="gap: 1.25rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                <div class="flex items-center justify-between">
                     <div>
-                        <strong style="font-size: 0.88rem;">Higher contrast</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Strengthen text and control contrast.</div>
+                        <strong class="text-slate-800">Higher contrast</strong>
+                        <div class="text-slate-400 text-[11px]">Strengthen text contrast.</div>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" />
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <input type="checkbox" class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="flex items-center justify-between">
                     <div>
-                        <strong style="font-size: 0.88rem;">Reduce motion</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Limit animated transitions and movement.</div>
+                        <strong class="text-slate-800">Reduce motion</strong>
+                        <div class="text-slate-400 text-[11px]">Limit transitions.</div>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" />
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <input type="checkbox" class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="flex items-center justify-between">
                     <div>
-                        <strong style="font-size: 0.88rem;">Larger pointer targets</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Make clickable areas easier to select.</div>
+                        <strong class="text-slate-800">Larger pointer targets</strong>
+                        <div class="text-slate-400 text-[11px]">Easier clickable areas.</div>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked />
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="flex items-center justify-between">
                     <div>
-                        <strong style="font-size: 0.88rem;">Keyboard focus indicator</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Always show the selected control.</div>
+                        <strong class="text-slate-800">Keyboard focus indicator</strong>
+                        <div class="text-slate-400 text-[11px]">Highlight active control.</div>
                     </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked />
-                        <span class="toggle-slider"></span>
-                    </label>
+                    <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                 </div>
             </div>
         </div>
 
         <!-- Sign Out Card -->
-        <div class="card" style="display: flex; align-items: center; justify-content: space-between; border-color: #FECACA; background-color: #FFFDFD;">
+        <div class="card-base p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-red-200 bg-red-50/30 text-xs">
             <div>
-                <strong style="color: #991B1B;">Finished using this device?</strong>
-                <div style="font-size: 0.78rem; color: var(--text-muted);">Sign out of AcademIQ. Saved course content will remain unless you remove it first.</div>
+                <strong class="text-red-900">Finished using this device?</strong>
+                <div class="text-slate-500">Sign out of AcademIQ. Saved course content will remain unless removed.</div>
             </div>
-            <button class="btn btn-danger btn-sm" @onclick='() => Navigation.NavigateTo("/login")' style="gap: 0.35rem;">
+            <button class="btn-secondary !border-red-200 !text-red-700 hover:!bg-red-50 text-xs shrink-0" @onclick='() => Navigation.NavigateTo("/login")'>
                 🚪 Sign Out
             </button>
         </div>
@@ -342,8 +306,5 @@
 </div>
 
 @code {
-    private void SaveSettings()
-    {
-        // Saved feedback
-    }
+    private void SaveSettings() { }
 }

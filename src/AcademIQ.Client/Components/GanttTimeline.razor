@@ -1,110 +1,87 @@
 @inject AppStateService State
 
-<div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+<div class="card-base p-6 flex flex-col justify-between">
     <div>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <div class="flex items-center justify-between mb-5">
             <div>
-                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-primary); margin: 0;">Course Milestone Tracker</h3>
-                <span style="font-size: 0.8rem; color: var(--text-muted);">CS-401 · Fall term</span>
+                <h3 class="font-serif font-semibold text-base text-slate-900">Course Milestone Tracker</h3>
+                <span class="text-xs text-slate-500">CS-401 · Fall term</span>
             </div>
-            <div class="badge badge-blue" style="font-weight: 700; font-size: 0.85rem; padding: 0.25rem 0.6rem;">
+            <span class="badge-status-blue font-bold text-xs px-2.5 py-0.5">
                 60%
-            </div>
+            </span>
         </div>
 
-        <!-- Pure CSS Gantt Grid -->
-        <div class="gantt-container">
-            <div class="gantt-grid">
-                <!-- Header -->
-                <div class="gantt-header-cell label-col">Milestone</div>
-                @for (int w = 1; w <= 10; w++)
-                {
-                    <div class="gantt-header-cell">@w</div>
-                }
-
-                <!-- Row 1: Lab Report 3 (Weeks 5-6) -->
-                <div class="gantt-row-label">
-                    <div class="gantt-row-title">Lab Report 3</div>
-                    <div class="gantt-row-subtitle">Draft + rubric</div>
+        <div class="w-full overflow-x-auto">
+            <div class="min-w-[480px]">
+                <div class="grid grid-cols-11 gap-1 items-center pb-2 border-b border-slate-100">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Milestone</div>
+                    @for (int w = 1; w <= 10; w++)
+                    {
+                        <div class="text-[11px] font-semibold text-slate-400 text-center">@w</div>
+                    }
                 </div>
-                @for (int w = 1; w <= 10; w++)
-                {
-                    <div class="gantt-cell">
-                        @if (w == 5)
-                        {
-                            <div class="gantt-bar in-progress" style="width: 200%; left: 0;">
-                                In-Progress
-                            </div>
-                        }
-                    </div>
-                }
 
-                <!-- Row 2: Midterm (Week 7) -->
-                <div class="gantt-row-label">
-                    <div class="gantt-row-title">Midterm</div>
-                    <div class="gantt-row-subtitle">Oct 19 · 09:00</div>
-                </div>
-                @for (int w = 1; w <= 10; w++)
-                {
-                    <div class="gantt-cell">
-                        @if (w == 7)
-                        {
-                            <div class="gantt-bar due-soon" style="width: 100%; left: 0;">
-                                Due Soon
-                            </div>
-                        }
+                <div class="py-3 border-b border-slate-100 flex items-center">
+                    <div class="w-1/11 pr-2">
+                        <div class="font-semibold text-xs text-slate-800">Lab Report 3</div>
+                        <div class="text-[10px] text-slate-400">Draft + rubric</div>
                     </div>
-                }
+                    <div class="flex-1 grid grid-cols-10 gap-1 relative h-7">
+                        <div class="col-start-5 col-span-2 bg-academic-green-50 text-academic-green-700 border border-academic-green-200 border-l-4 border-l-academic-green-500 rounded-md flex items-center px-2 text-[11px] font-semibold shadow-2xs truncate">
+                            In-Progress
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Row 3: Final Project (Weeks 9-10) -->
-                <div class="gantt-row-label">
-                    <div class="gantt-row-title">Final Project</div>
-                    <div class="gantt-row-subtitle">Research build</div>
-                </div>
-                @for (int w = 1; w <= 10; w++)
-                {
-                    <div class="gantt-cell">
-                        @if (w == 9)
-                        {
-                            <div class="gantt-bar upcoming" style="width: 190%; left: 0;">
-                                Upcoming
-                            </div>
-                        }
+                <div class="py-3 border-b border-slate-100 flex items-center">
+                    <div class="w-1/11 pr-2">
+                        <div class="font-semibold text-xs text-slate-800">Midterm</div>
+                        <div class="text-[10px] text-slate-400">Oct 19 · 09:00</div>
                     </div>
-                }
+                    <div class="flex-1 grid grid-cols-10 gap-1 relative h-7">
+                        <div class="col-start-7 col-span-1 bg-academic-amber-50 text-academic-amber-700 border border-academic-amber-100 border-l-4 border-l-academic-amber-500 rounded-md flex items-center px-2 text-[11px] font-semibold shadow-2xs truncate">
+                            Due Soon
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-3 flex items-center">
+                    <div class="w-1/11 pr-2">
+                        <div class="font-semibold text-xs text-slate-800">Final Project</div>
+                        <div class="text-[10px] text-slate-400">Research build</div>
+                    </div>
+                    <div class="flex-1 grid grid-cols-10 gap-1 relative h-7">
+                        <div class="col-start-9 col-span-2 bg-slate-100 text-slate-600 border border-slate-200 border-l-4 border-l-slate-400 rounded-md flex items-center px-2 text-[11px] font-semibold shadow-2xs truncate">
+                            Upcoming
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Gantt Footer Legend -->
-    <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; margin-top: 1.25rem;">
-        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <span style="display: flex; align-items: center; gap: 0.35rem;">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--accent-green);"></span> Active
+    <div class="border-t border-slate-100 pt-4 mt-4">
+        <div class="flex items-center justify-between text-xs text-slate-500">
+            <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-academic-green-500"></span> Active
                 </span>
-                <span style="display: flex; align-items: center; gap: 0.35rem;">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--accent-amber);"></span> Due soon
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-academic-amber-500"></span> Due soon
                 </span>
-                <span style="display: flex; align-items: center; gap: 0.35rem;">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background-color: var(--text-muted);"></span> Upcoming
+                <span class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-slate-400"></span> Upcoming
                 </span>
             </div>
-            <div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-            </div>
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text-muted);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        <div class="flex items-center gap-2 mt-3 text-xs text-slate-400">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <span>All dates stay available offline and sync when your connection returns.</span>
         </div>

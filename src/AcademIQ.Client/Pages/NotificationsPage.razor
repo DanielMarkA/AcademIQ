@@ -3,25 +3,25 @@
 @inject NavigationManager Navigation
 
 <!-- Header -->
-<div style="margin-bottom: 1.5rem;">
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-        UPDATES ACROSS YOUR COURSES
+<div class="mb-6">
+    <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
+        Updates Across Your Courses
     </div>
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h1 style="font-family: var(--font-serif); font-size: 2.15rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+            <h1 class="font-serif text-3xl font-bold text-slate-900 mb-1">
                 Notifications &amp; Activity
             </h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+            <p class="text-sm text-slate-500">
                 Grades, feedback, deadlines, announcements, and saved-work updates in one place.
             </p>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <button class="btn btn-secondary" @onclick="State.MarkAllNotificationsAsRead" style="gap: 0.4rem;">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button class="btn-secondary !py-2 !px-3 text-xs flex-1 sm:flex-initial" @onclick="State.MarkAllNotificationsAsRead">
                 ✔ Mark all as read
             </button>
-            <button class="btn btn-secondary" @onclick='() => Navigation.NavigateTo("/profile")' style="gap: 0.4rem;">
+            <button class="btn-secondary !py-2 !px-3 text-xs flex-1 sm:flex-initial" @onclick='() => Navigation.NavigateTo("/profile")'>
                 ⚙️ Notification settings
             </button>
         </div>
@@ -29,258 +29,213 @@
 </div>
 
 <!-- Filter Tabs & Search -->
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; background-color: var(--bg-surface-secondary); padding: 0.25rem; border-radius: var(--radius-md);">
-        <button class="btn btn-sm @(FilterCategory == "all" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => FilterCategory = "all"'>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "all" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => FilterCategory = "all"'>
             All 8
         </button>
-        <button class="btn btn-sm @(FilterCategory == "unread" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => FilterCategory = "unread"'>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "unread" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => FilterCategory = "unread"'>
             Unread 2
         </button>
-        <button class="btn btn-sm @(FilterCategory == "courses" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => FilterCategory = "courses"'>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "courses" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => FilterCategory = "courses"'>
             Courses
         </button>
-        <button class="btn btn-sm @(FilterCategory == "saved" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => FilterCategory = "saved"'>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "saved" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => FilterCategory = "saved"'>
             Saved work
         </button>
     </div>
 
-    <div style="position: relative;">
-        <input type="text" class="form-input" placeholder="Search activity" style="padding-left: 2rem; width: 220px;" />
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    <div class="relative w-full sm:w-60">
+        <input type="text" class="input-field pl-9 text-xs" placeholder="Search activity" />
+        <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
     </div>
 </div>
 
-<!-- Main Split: Notification Feed (Left) + Stats & Delivery Preferences (Right) -->
-<div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 1.5rem;">
+<!-- Main Split -->
+<div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
     <!-- Feed Column -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-        <!-- Group: Today -->
-        <div class="card" style="padding: 0; overflow: hidden;">
-            <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background-color: #FAFAFA;">
-                <h3 style="font-family: var(--font-serif); font-size: 1.05rem; margin: 0;">Today</h3>
-                <span style="font-size: 0.78rem; color: var(--text-muted);">3 updates</span>
+    <div class="space-y-6">
+        <!-- Today -->
+        <div class="card-base overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="font-serif font-semibold text-sm text-slate-900">Today</h3>
+                <span class="text-[11px] text-slate-400">3 updates</span>
             </div>
 
-            <div style="display: flex; flex-direction: column;">
-                <!-- Notif 1 -->
-                <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-green-light); color: var(--accent-green); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div class="divide-y divide-slate-100 text-xs">
+                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-academic-green-50 text-academic-green-600 flex items-center justify-center shrink-0 font-bold">
                             ✔
                         </div>
                         <div>
-                            <div style="display: flex; align-items: center; gap: 0.45rem;">
-                                <strong>Grade posted for Systems Quiz 2</strong>
-                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-blue);"></span>
+                            <div class="flex items-center gap-1.5 font-semibold text-slate-900">
+                                <span>Grade posted for Systems Quiz 2</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-academic-blue-500"></span>
                             </div>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">You earned 18/20. Review the two questions you missed.</div>
+                            <div class="text-slate-500 mt-0.5">You earned 18/20. Review the two questions you missed.</div>
                         </div>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">CS-401</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">10:42 AM</div>
+                    <div class="text-right shrink-0">
+                        <span class="badge-status-green text-[10px]">CS-401</span>
+                        <div class="text-[10px] text-slate-400 mt-1">10:42 AM</div>
                     </div>
                 </div>
 
-                <!-- Notif 2 -->
-                <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-surface-secondary); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
                             💬
                         </div>
                         <div>
-                            <div style="display: flex; align-items: center; gap: 0.45rem;">
-                                <strong>Prof. Lee left feedback on your draft</strong>
-                                <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--accent-blue);"></span>
+                            <div class="flex items-center gap-1.5 font-semibold text-slate-900">
+                                <span>Prof. Lee left feedback on your draft</span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-academic-blue-500"></span>
                             </div>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">"Your comparison is clear. Add one sentence about the limits of the sample size."</div>
+                            <div class="text-slate-500 mt-0.5">"Your comparison is clear. Add one sentence about the limits of the sample size."</div>
                         </div>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">CS-401</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">9:18 AM</div>
+                    <div class="text-right shrink-0">
+                        <span class="badge-status-green text-[10px]">CS-401</span>
+                        <div class="text-[10px] text-slate-400 mt-1">9:18 AM</div>
                     </div>
                 </div>
 
-                <!-- Notif 3 -->
-                <div style="padding: 1rem 1.25rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-green-light); color: var(--accent-green); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-academic-green-50 text-academic-green-600 flex items-center justify-center shrink-0">
                             🔄
                         </div>
                         <div>
-                            <strong>Your saved work is up to date</strong>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">Lab Report 3 and two attachments were sent successfully.</div>
+                            <div class="font-semibold text-slate-900">Your saved work is up to date</div>
+                            <div class="text-slate-500 mt-0.5">Lab Report 3 and two attachments were sent successfully.</div>
                         </div>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">Saved work</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">8:57 AM</div>
+                    <div class="text-right shrink-0">
+                        <span class="badge-status-green text-[10px]">Saved work</span>
+                        <div class="text-[10px] text-slate-400 mt-1">8:57 AM</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Group: This Week -->
-        <div class="card" style="padding: 0; overflow: hidden;">
-            <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background-color: #FAFAFA;">
-                <h3 style="font-family: var(--font-serif); font-size: 1.05rem; margin: 0;">This Week</h3>
-                <span style="font-size: 0.78rem; color: var(--text-muted);">3 updates</span>
+        <!-- This Week -->
+        <div class="card-base overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="font-serif font-semibold text-sm text-slate-900">This Week</h3>
+                <span class="text-[11px] text-slate-400">3 updates</span>
             </div>
 
-            <div style="display: flex; flex-direction: column;">
-                <!-- Notif 4 -->
-                <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--accent-amber-light); color: var(--accent-amber); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+            <div class="divide-y divide-slate-100 text-xs">
+                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-academic-amber-50 text-academic-amber-600 flex items-center justify-center shrink-0">
                             📅
                         </div>
                         <div>
-                            <strong>Lab Report 3 is due Friday</strong>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">Your draft has 842 words. Submit by Oct 4 at 11:59 PM.</div>
+                            <div class="font-semibold text-slate-900">Lab Report 3 is due Friday</div>
+                            <div class="text-slate-500 mt-0.5">Your draft has 842 words. Submit by Oct 4 at 11:59 PM.</div>
                         </div>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-amber" style="font-size: 0.75rem;">CS-401</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Sep 30</div>
+                    <div class="text-right shrink-0">
+                        <span class="badge-status-amber text-[10px]">CS-401</span>
+                        <div class="text-[10px] text-slate-400 mt-1">Sep 30</div>
                     </div>
                 </div>
 
-                <!-- Notif 5 -->
-                <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-surface-secondary); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
                             📢
                         </div>
                         <div>
-                            <strong>New course announcement</strong>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">Sample recovery data is now available in Course Materials.</div>
+                            <div class="font-semibold text-slate-900">New course announcement</div>
+                            <div class="text-slate-500 mt-0.5">Sample recovery data is now available in Course Materials.</div>
                         </div>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">CS-401</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Sep 29</div>
+                    <div class="text-right shrink-0">
+                        <span class="badge-status-green text-[10px]">CS-401</span>
+                        <div class="text-[10px] text-slate-400 mt-1">Sep 29</div>
                     </div>
                 </div>
 
-                <!-- Notif 6 -->
-                <div style="padding: 1rem 1.25rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-surface-secondary); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
                             📄
                         </div>
                         <div>
-                            <strong>Proposal revision received</strong>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">Your Technical Writing assignment was received and is awaiting review.</div>
+                            <div class="font-semibold text-slate-900">Proposal revision received</div>
+                            <div class="text-slate-500 mt-0.5">Your Technical Writing assignment was received and is awaiting review.</div>
                         </div>
                     </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">ENG-210</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Sep 28</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Group: Earlier -->
-        <div class="card" style="padding: 0; overflow: hidden;">
-            <div style="padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background-color: #FAFAFA;">
-                <h3 style="font-family: var(--font-serif); font-size: 1.05rem; margin: 0;">Earlier</h3>
-                <span style="font-size: 0.78rem; color: var(--text-muted);">2 updates</span>
-            </div>
-
-            <div style="display: flex; flex-direction: column;">
-                <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-surface-secondary); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            💬
-                        </div>
-                        <div>
-                            <strong>Discussion reply from Noah Kim</strong>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">Noah replied to your post on amortized analysis.</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">CS-315</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Sep 24</div>
-                    </div>
-                </div>
-
-                <div style="padding: 1rem 1.25rem; display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;">
-                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <div style="width: 32px; height: 32px; border-radius: 50%; background-color: var(--bg-surface-secondary); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                            💾
-                        </div>
-                        <div>
-                            <strong>Course materials updated</strong>
-                            <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.15rem;">Week 4 readings are now saved on this device.</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right; flex-shrink: 0;">
-                        <span class="badge badge-green" style="font-size: 0.75rem;">CS-315</span>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">Sep 23</div>
+                    <div class="text-right shrink-0">
+                        <span class="badge-status-green text-[10px]">ENG-210</span>
+                        <div class="text-[10px] text-slate-400 mt-1">Sep 28</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Status & Delivery Preferences -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Right Sidebar -->
+    <div class="space-y-6">
         <!-- Catch-up Card -->
-        <div class="card" style="padding: 1.25rem;">
-            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">You're caught up</h3>
-            <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 1rem;">
+        <div class="card-base p-5">
+            <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">You're caught up</h3>
+            <span class="text-[11px] text-slate-400 block mb-4">
                 2 updates are still unread
             </span>
 
-            <div class="grid-3" style="text-align: center; gap: 0.5rem; background-color: var(--bg-canvas); padding: 0.75rem; border-radius: var(--radius-md);">
+            <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <div>
-                    <div style="font-size: 1.4rem; font-weight: 700; font-family: var(--font-serif); color: var(--text-primary);">2</div>
-                    <div style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted);">UNREAD</div>
+                    <div class="text-xl font-serif font-bold text-slate-900">2</div>
+                    <div class="text-[9px] uppercase font-bold tracking-wider text-slate-400">UNREAD</div>
                 </div>
                 <div>
-                    <div style="font-size: 1.4rem; font-weight: 700; font-family: var(--font-serif); color: var(--text-primary);">3</div>
-                    <div style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted);">THIS WEEK</div>
+                    <div class="text-xl font-serif font-bold text-slate-900">3</div>
+                    <div class="text-[9px] uppercase font-bold tracking-wider text-slate-400">THIS WEEK</div>
                 </div>
                 <div>
-                    <div style="font-size: 1.4rem; font-weight: 700; font-family: var(--font-serif); color: var(--text-primary);">8</div>
-                    <div style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted);">TOTAL</div>
+                    <div class="text-xl font-serif font-bold text-slate-900">8</div>
+                    <div class="text-[9px] uppercase font-bold tracking-wider text-slate-400">TOTAL</div>
                 </div>
             </div>
         </div>
 
-        <!-- Delivery Preferences Card -->
-        <div class="card" style="padding: 1.25rem;">
-            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Delivery preferences</h3>
-            <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 1rem;">
+        <!-- Delivery Preferences -->
+        <div class="card-base p-5">
+            <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Delivery preferences</h3>
+            <span class="text-[11px] text-slate-400 block mb-4">
                 Choose which updates reach you
             </span>
 
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between;">
+            <div class="space-y-3 text-xs text-slate-600 mb-4">
+                <div class="flex justify-between items-center">
                     <span>Grade and feedback</span>
-                    <strong style="color: var(--accent-green);">On</strong>
+                    <strong class="text-academic-green-600 font-semibold">On</strong>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
+                <div class="flex justify-between items-center">
                     <span>Upcoming deadlines</span>
-                    <strong style="color: var(--accent-green);">On</strong>
+                    <strong class="text-academic-green-600 font-semibold">On</strong>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
+                <div class="flex justify-between items-center">
                     <span>Course announcements</span>
-                    <strong style="color: var(--accent-green);">On</strong>
+                    <strong class="text-academic-green-600 font-semibold">On</strong>
                 </div>
-                <div style="display: flex; justify-content: space-between;">
+                <div class="flex justify-between items-center">
                     <span>Saved-work updates</span>
-                    <strong style="color: var(--accent-green);">On</strong>
+                    <strong class="text-academic-green-600 font-semibold">On</strong>
                 </div>
             </div>
 
-            <button class="btn btn-secondary btn-sm" style="width: 100%;" @onclick='() => Navigation.NavigateTo("/profile")'>
+            <button class="btn-secondary w-full text-xs" @onclick='() => Navigation.NavigateTo("/profile")'>
                 Manage preferences
             </button>
         </div>

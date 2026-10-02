@@ -3,33 +3,30 @@
 @inject NavigationManager Navigation
 
 <!-- Header -->
-<div style="margin-bottom: 1.5rem;">
-    <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-        FALL 2026 · CURRENT TERM
+<div class="mb-6">
+    <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
+        Fall 2026 · Current Term
     </div>
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-            <h1 style="font-family: var(--font-serif); font-size: 2rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+            <h1 class="font-serif text-3xl font-bold text-slate-900 mb-1">
                 My Courses
             </h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+            <p class="text-sm text-slate-500">
                 Continue where you left off and see what needs your attention next.
             </p>
         </div>
 
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <div style="position: relative;">
-                <input type="text" class="form-input" placeholder="Search courses" style="padding-left: 2rem; width: 220px;" />
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="relative flex-1 sm:flex-initial">
+                <input type="text" class="input-field pl-9 w-full sm:w-60 text-xs" placeholder="Search courses" />
+                <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
-            <button class="btn btn-primary" style="background-color: var(--primary-navy); gap: 0.5rem;" @onclick="UpdateSavedContent">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <polyline points="1 20 1 14 7 14"></polyline>
-                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            <button class="btn-primary shrink-0 gap-1.5" @onclick="UpdateSavedContent">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
                 Update saved content
             </button>
@@ -38,197 +35,197 @@
 </div>
 
 <!-- Offline Availability Banner -->
-<div class="card" style="background-color: var(--accent-green-light); border: 1px solid var(--accent-green-border); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <div style="width: 32px; height: 32px; border-radius: 6px; background-color: #ffffff; color: var(--accent-green); display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+<div class="card-base bg-academic-green-50/70 border-academic-green-200 p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-white text-academic-green-600 flex items-center justify-center text-lg shadow-2xs">
             📖
         </div>
         <div>
-            <strong style="color: var(--accent-green); font-size: 0.92rem;">All three courses are available on this device</strong>
-            <div style="color: var(--text-secondary); font-size: 0.82rem;">Recent lessons, assignments, and your drafts are ready without a connection.</div>
+            <strong class="text-sm font-semibold text-academic-green-700">All three courses are available on this device</strong>
+            <div class="text-xs text-slate-600">Recent lessons, assignments, and your drafts are ready without a connection.</div>
         </div>
     </div>
-    <div style="font-size: 0.82rem; font-weight: 600; color: var(--accent-green); font-family: var(--font-mono);">
+    <div class="text-xs font-semibold text-academic-green-700 font-mono self-end sm:self-auto">
         486 MB saved
     </div>
 </div>
 
-<!-- Filter Tabs & Term Switcher -->
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; background-color: var(--bg-surface-secondary); padding: 0.25rem; border-radius: var(--radius-md);">
-        <button class="btn btn-sm @(SelectedFilter == "all" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => SelectedFilter = "all"'>
+<!-- Filter Tabs & Term Selector -->
+<div class="flex items-center justify-between gap-4 mb-6">
+    <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(SelectedFilter == "all" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => SelectedFilter = "all"'>
             All 3
         </button>
-        <button class="btn btn-sm @(SelectedFilter == "progress" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => SelectedFilter = "progress"'>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(SelectedFilter == "progress" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => SelectedFilter = "progress"'>
             In Progress 3
         </button>
-        <button class="btn btn-sm @(SelectedFilter == "completed" ? "btn-primary" : "btn-secondary")" style="border: none;" @onclick='() => SelectedFilter = "completed"'>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(SelectedFilter == "completed" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
+                @onclick='() => SelectedFilter = "completed"'>
             Completed 0
         </button>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">
+    <div class="flex items-center gap-2 text-xs text-slate-400">
         <span>Showing Fall 2026</span>
-        <button class="btn btn-secondary btn-sm" style="gap: 0.35rem;">
+        <button class="btn-secondary !py-1 !px-2.5 text-xs gap-1">
             Term
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
         </button>
     </div>
 </div>
 
 <!-- 3 Courses Grid -->
-<div class="grid-3" style="margin-bottom: 2rem;">
-    <!-- Course 1: Advanced Systems -->
-    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid var(--accent-green);">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Course 1 -->
+    <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
         <div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">
-                    CS-401 · FALL 2026
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    CS-401 · Fall 2026
                 </span>
-                <span class="badge badge-green">Ready offline</span>
+                <span class="badge-status-green">Ready offline</span>
             </div>
-            <h2 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.2rem;">
+            <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
                 Advanced Systems
             </h2>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            <div class="text-xs text-slate-500 mb-5">
                 Prof. Lee
             </div>
 
-            <!-- Milestone Box -->
-            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
-                <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-                    NEXT MILESTONE
+            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
+                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                    Next Milestone
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem;">
-                    <strong>Lab Report 3</strong>
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Due Oct 4 · 11:59 PM</span>
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
+                    <span>Lab Report 3</span>
+                    <span class="text-slate-400 font-normal">Due Oct 4 · 11:59 PM</span>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div style="margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+            <div class="mb-5">
+                <div class="flex justify-between text-xs mb-1.5 text-slate-600">
                     <span>Course progress</span>
-                    <strong>68%</strong>
+                    <strong class="font-semibold text-slate-900">68%</strong>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: 68%;"></div>
+                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 68%;"></div>
                 </div>
             </div>
         </div>
 
-        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 0.78rem; color: var(--text-muted);">Updated today at 9:42 AM</span>
-            <button class="btn btn-secondary btn-sm" @onclick='() => NavigateToCourse("CS-401")' style="gap: 0.35rem;">
-                Open course &rarr;
+        <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Updated today at 9:42 AM</span>
+            <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick='() => NavigateToCourse("CS-401")'>
+                Open course
+                <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
             </button>
         </div>
     </div>
 
-    <!-- Course 2: Data Structures -->
-    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid var(--accent-green);">
+    <!-- Course 2 -->
+    <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
         <div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">
-                    CS-315 · FALL 2026
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    CS-315 · Fall 2026
                 </span>
-                <span class="badge badge-green">Ready offline</span>
+                <span class="badge-status-green">Ready offline</span>
             </div>
-            <h2 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.2rem;">
+            <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
                 Data Structures
             </h2>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            <div class="text-xs text-slate-500 mb-5">
                 Dr. Sofia Malik
             </div>
 
-            <!-- Milestone Box -->
-            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
-                <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-                    NEXT MILESTONE
+            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
+                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                    Next Milestone
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem;">
-                    <strong>Problem Set 6</strong>
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Due Oct 7 · 9:00 AM</span>
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
+                    <span>Problem Set 6</span>
+                    <span class="text-slate-400 font-normal">Due Oct 7 · 9:00 AM</span>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div style="margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+            <div class="mb-5">
+                <div class="flex justify-between text-xs mb-1.5 text-slate-600">
                     <span>Course progress</span>
-                    <strong>54%</strong>
+                    <strong class="font-semibold text-slate-900">54%</strong>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: 54%;"></div>
+                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 54%;"></div>
                 </div>
             </div>
         </div>
 
-        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 0.78rem; color: var(--text-muted);">Updated today at 9:42 AM</span>
-            <button class="btn btn-secondary btn-sm" @onclick='() => NavigateToCourse("CS-315")' style="gap: 0.35rem;">
-                Open course &rarr;
+        <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Updated today at 9:42 AM</span>
+            <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick='() => NavigateToCourse("CS-315")'>
+                Open course
+                <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
             </button>
         </div>
     </div>
 
-    <!-- Course 3: Technical Writing -->
-    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 3px solid var(--accent-green);">
+    <!-- Course 3 -->
+    <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
         <div>
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">
-                    ENG-210 · FALL 2026
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    ENG-210 · Fall 2026
                 </span>
-                <span class="badge badge-blue">Materials updating</span>
+                <span class="badge-status-blue">Materials updating</span>
             </div>
-            <h2 style="font-family: var(--font-serif); font-size: 1.35rem; margin-bottom: 0.2rem;">
+            <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
                 Technical Writing
             </h2>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            <div class="text-xs text-slate-500 mb-5">
                 Elena Ruiz
             </div>
 
-            <!-- Milestone Box -->
-            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
-                <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-                    NEXT MILESTONE
+            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
+                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                    Next Milestone
                 </div>
-                <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.88rem;">
-                    <strong>Proposal revision</strong>
-                    <span style="color: var(--text-muted); font-size: 0.8rem;">Due Oct 11 · 5:00 PM</span>
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
+                    <span>Proposal revision</span>
+                    <span class="text-slate-400 font-normal">Due Oct 11 · 5:00 PM</span>
                 </div>
             </div>
 
-            <!-- Progress Bar -->
-            <div style="margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 0.35rem; color: var(--text-secondary);">
+            <div class="mb-5">
+                <div class="flex justify-between text-xs mb-1.5 text-slate-600">
                     <span>Course progress</span>
-                    <strong>82%</strong>
+                    <strong class="font-semibold text-slate-900">82%</strong>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" style="width: 82%;"></div>
+                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 82%;"></div>
                 </div>
             </div>
         </div>
 
-        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1rem; display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-size: 0.78rem; color: var(--text-muted);">Updated today at 9:42 AM</span>
-            <button class="btn btn-secondary btn-sm" @onclick='() => NavigateToCourse("ENG-210")' style="gap: 0.35rem;">
-                Open course &rarr;
+        <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
+            <span class="text-slate-400">Updated today at 9:42 AM</span>
+            <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick='() => NavigateToCourse("ENG-210")'>
+                Open course
+                <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
             </button>
         </div>
     </div>
 </div>
 
-<!-- Academic Calendar Footer Banner -->
-<div class="card" style="padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem;">
-    <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--text-secondary);">
+<!-- Calendar Footer Banner -->
+<div class="card-base p-4 flex items-center justify-between text-xs text-slate-600">
+    <div class="flex items-center gap-2">
         <span>📅</span>
         <span>Midterm break begins October 19.</span>
     </div>
-    <a href="#" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">
+    <a href="#" class="font-semibold text-navy-800 hover:text-navy-900">
         View full academic calendar &rarr;
     </a>
 </div>
@@ -241,8 +238,5 @@
         Navigation.NavigateTo($"/course/{code}");
     }
 
-    private void UpdateSavedContent()
-    {
-        // Content refresh simulation
-    }
+    private void UpdateSavedContent() { }
 }

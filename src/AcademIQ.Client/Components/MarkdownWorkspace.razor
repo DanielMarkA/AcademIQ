@@ -1,139 +1,140 @@
 @inject AppStateService State
 @inject NavigationManager Navigation
 
-<div style="margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <button class="btn btn-secondary btn-sm" @onclick="GoBackToAssignment" style="gap: 0.4rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
+<div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+        <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="GoBackToAssignment">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
             Back to assignment
         </button>
         <div>
-            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--text-muted);">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">
                 CS-401 · LAB REPORT 3
             </div>
-            <h1 style="font-size: 1.45rem; font-family: var(--font-serif); margin: 0;">
+            <h1 class="text-xl font-serif font-bold text-slate-900">
                 @(State.ActiveDraft?.AssignmentTitle ?? "Lab Report 3 Draft")
             </h1>
         </div>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <div class="status-pill offline-ready" style="font-size: 0.8rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    <div class="flex items-center gap-3">
+        <span class="badge-status-green py-1 px-3 text-xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             Saved on this device
-        </div>
-        <button class="btn btn-secondary btn-sm" @onclick="ToggleFullPreview">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                <circle cx="12" cy="12" r="3"></circle>
+        </span>
+        <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="ToggleFullPreview">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
             </svg>
             Preview submission
         </button>
-        <button class="btn btn-primary btn-sm" @onclick="SubmitAssignment" style="background-color: var(--primary-navy);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"></line>
-                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        <button class="btn-primary !py-1.5 !px-3 text-xs" @onclick="SubmitAssignment">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
             </svg>
             Submit Assignment
         </button>
     </div>
 </div>
 
-<!-- Editor & Formatting Toolbar -->
-<div class="editor-toolbar" style="border-radius: var(--radius-lg) var(--radius-lg) 0 0; border: 1px solid var(--border-subtle); border-bottom: none;">
-    <div class="toolbar-group">
-        <select class="form-select" style="width: 120px; padding: 0.25rem 0.5rem; font-size: 0.82rem; height: 32px;" @onchange="OnFormatStyleSelected">
+<!-- Formatting Toolbar -->
+<div class="bg-white border border-slate-200 rounded-t-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2 border-b-0 shadow-2xs">
+    <div class="flex items-center gap-1">
+        <select class="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700 focus:outline-none" @onchange="OnFormatStyleSelected">
             <option value="p">Body text</option>
             <option value="h1">Heading 1</option>
             <option value="h2">Heading 2</option>
             <option value="h3">Heading 3</option>
         </select>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("# ")' title="Heading">H</button>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("**", "**")' title="Bold"><strong>B</strong></button>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("*", "*")' title="Italic"><em>I</em></button>
-        <span style="color: var(--border-subtle);">|</span>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("- ")' title="Bullet List">•</button>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("1. ")' title="Numbered List">1.</button>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("[", "](url)")' title="Link">🔗</button>
-        <button type="button" class="tool-btn" @onclick='() => InsertMarkdown("`", "`")' title="Code">&lt;&gt;</button>
-        <button type="button" class="tool-btn" @onclick="InsertTable" title="Table">📊</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs font-serif font-bold text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("# ")' title="Heading">H</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs font-bold text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("**", "**")' title="Bold">B</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs italic font-serif text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("*", "*")' title="Italic">I</button>
+        <span class="text-slate-300 mx-1">|</span>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("- ")' title="Bullet List">•</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("1. ")' title="Numbered List">1.</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("[", "](url)")' title="Link">🔗</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs font-mono text-slate-600 hover:bg-slate-100" @onclick='() => InsertMarkdown("`", "`")' title="Code">&lt;&gt;</button>
+        <button type="button" class="w-7 h-7 flex items-center justify-center rounded text-xs text-slate-600 hover:bg-slate-100" @onclick="InsertTable" title="Table">📊</button>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+    <div class="flex items-center gap-3 text-xs text-slate-500">
         <span>@(State.ActiveDraft?.WordCount ?? 842) / 1,600 words</span>
-        <span class="badge badge-slate">Markdown + Preview</span>
+        <span class="badge-status-slate text-[11px]">Markdown + Preview</span>
     </div>
 </div>
 
-<!-- Main Workspace 3-Column Split -->
-<div class="workspace-layout" style="border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg);">
+<!-- 3-Column Split Workspace -->
+<div class="grid grid-cols-1 md:grid-cols-[200px_1fr_1fr] bg-white border border-slate-200 rounded-b-2xl overflow-hidden min-h-[560px] shadow-sm">
     <!-- Column 1: Document Outline -->
-    <div class="workspace-outline">
-        <div class="outline-title">Document Outline</div>
-        <div class="outline-item">1 Introduction</div>
-        <div class="outline-item">2 Method</div>
-        <div class="outline-item indent-1">2.1 Test environment</div>
-        <div class="outline-item active">3 Results</div>
-        <div class="outline-item indent-1">3.1 Recovery time</div>
-        <div class="outline-item">4 Discussion</div>
-        <div class="outline-item indent-1">4.1 Limitations</div>
-        <div class="outline-item">5 References</div>
-
-        <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-subtle);">
-            <div class="progress-bar-container" style="margin-bottom: 0.4rem;">
-                <div class="progress-bar-fill" style="width: 62%;"></div>
+    <div class="border-r border-slate-200 p-4 flex flex-col justify-between bg-slate-50/50">
+        <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Document Outline</div>
+            <div class="space-y-1 text-xs">
+                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">1 Introduction</div>
+                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">2 Method</div>
+                <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer">2.1 Test environment</div>
+                <div class="px-2.5 py-1.5 rounded-lg bg-academic-blue-50 text-academic-blue-600 font-semibold cursor-pointer">3 Results</div>
+                <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer">3.1 Recovery time</div>
+                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">4 Discussion</div>
+                <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer">4.1 Limitations</div>
+                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">5 References</div>
             </div>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">5 of 8 sections drafted</span>
+        </div>
+
+        <div class="pt-4 border-t border-slate-200">
+            <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mb-1.5">
+                <div class="h-full bg-academic-green-500 rounded-full" style="width: 62%;"></div>
+            </div>
+            <div class="text-[11px] text-slate-400">5 of 8 sections drafted</div>
         </div>
     </div>
 
     <!-- Column 2: Raw Markdown Editor (Dark) -->
-    <div class="workspace-editor-pane">
-        <div class="pane-header dark">
+    <div class="bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800">
+        <div class="bg-slate-950/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between border-b border-slate-800">
             <span>Markdown</span>
-            <span style="font-family: var(--font-mono); font-size: 0.7rem; color: #64748B;">Line 24, column 18</span>
+            <span class="font-mono text-[10px] text-slate-500">Line 24, column 18</span>
         </div>
-        <textarea class="markdown-textarea" 
+        <textarea class="flex-1 w-full p-4 bg-transparent text-slate-100 font-mono text-xs leading-relaxed resize-none focus:outline-none placeholder-slate-600"
                   value="@MarkdownContent" 
                   @oninput="OnContentChanged"
-                  placeholder="Type your markdown coursework here..."></textarea>
+                  placeholder="Type your coursework in markdown..."></textarea>
     </div>
 
-    <!-- Column 3: HTML Live Preview (Light) -->
-    <div class="workspace-preview-pane">
-        <div class="pane-header light">
+    <!-- Column 3: Live HTML Preview (Light) -->
+    <div class="bg-white flex flex-col overflow-y-auto max-h-[600px]">
+        <div class="bg-slate-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between border-b border-slate-100">
             <span>HTML Preview</span>
-            <span style="font-size: 0.72rem; color: var(--text-muted);">Live Rendering</span>
+            <span class="text-[10px] text-slate-400">Live Rendering</span>
         </div>
-        <div class="rendered-preview-content">
+        <div class="p-6 text-slate-800 text-sm leading-relaxed prose prose-slate max-w-none">
             @((MarkupString)RenderedHtml)
         </div>
     </div>
 </div>
 
-<!-- Workspace Bottom Bar -->
-<div class="card" style="margin-top: 1rem; padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-direction: row;">
-    <div style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.85rem; color: var(--text-secondary);">
-        <div style="width: 28px; height: 28px; border-radius: 6px; background-color: var(--accent-green-light); color: var(--accent-green); display: flex; align-items: center; justify-content: center;">
+<!-- Bottom Status Bar -->
+<div class="card-base mt-4 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-academic-green-50 text-academic-green-600 flex items-center justify-center text-sm font-bold">
             💾
         </div>
         <div>
-            <strong>Saved on this device</strong>
-            <span style="color: var(--text-muted); font-size: 0.78rem; display: block;">Last saved a few seconds ago · Ready to sync when connected</span>
+            <div class="text-xs font-semibold text-slate-900">Saved on this device</div>
+            <div class="text-[11px] text-slate-400">Last saved a few seconds ago · Ready to sync when connected</div>
         </div>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 1rem;">
-        <span style="font-size: 0.82rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
-            📎 <strong>2 attachments</strong> (recovery-chart.png, results.csv)
+    <div class="flex items-center gap-4">
+        <span class="text-xs text-slate-500 flex items-center gap-1.5">
+            📎 <strong class="font-semibold text-slate-700">2 attachments</strong> (recovery-chart.png, results.csv)
         </span>
-        <button class="btn btn-secondary btn-sm" @onclick="AddAttachmentModal">
+        <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="AddAttachmentModal">
             + Add attachment
         </button>
     </div>
@@ -158,8 +159,8 @@
 
     private void UpdatePreview()
     {
-        var pipeline = new Markdig.MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-        RenderedHtml = Markdig.Markdown.ToHtml(MarkdownContent, pipeline);
+        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        RenderedHtml = Markdown.ToHtml(MarkdownContent, pipeline);
     }
 
     private void InsertMarkdown(string prefix, string suffix = "")
@@ -189,18 +190,12 @@
         Navigation.NavigateTo("/assignment/1");
     }
 
-    private void ToggleFullPreview()
-    {
-        // Toggle view
-    }
+    private void ToggleFullPreview() { }
 
     private void SubmitAssignment()
     {
         Navigation.NavigateTo("/");
     }
 
-    private void AddAttachmentModal()
-    {
-        // Attachment modal trigger
-    }
+    private void AddAttachmentModal() { }
 }

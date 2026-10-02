@@ -3,269 +3,265 @@
 @inject NavigationManager Navigation
 
 <!-- Breadcrumb -->
-<div class="nav-breadcrumbs" style="margin-bottom: 1rem;">
-    <a href="course/CS-401">CS-401 Advanced Systems</a>
-    <span class="separator">/</span>
-    <a href="courses">Assignments</a>
-    <span class="separator">/</span>
-    <span class="current">Lab Report 3</span>
+<div class="flex items-center gap-2 text-xs text-slate-400 mb-4">
+    <a href="course/CS-401" class="hover:text-slate-800 transition-colors">CS-401 Advanced Systems</a>
+    <span>/</span>
+    <a href="courses" class="hover:text-slate-800 transition-colors">Assignments</a>
+    <span>/</span>
+    <span class="text-slate-800 font-semibold">Lab Report 3</span>
 </div>
 
 <!-- Header -->
-<div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div>
-        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--accent-green); letter-spacing: 0.05em; margin-bottom: 0.2rem;">
-            CS-401 · ASSIGNMENT
+        <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
+            CS-401 · Assignment
         </div>
-        <h1 style="font-family: var(--font-serif); font-size: 2.15rem; color: var(--text-primary); margin: 0 0 0.25rem 0;">
+        <h1 class="font-serif text-3xl font-bold text-slate-900 mb-1">
             Lab Report 3
         </h1>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+        <p class="text-sm text-slate-500">
             Analyze system recovery behavior and communicate your findings in a concise technical report.
         </p>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <span class="status-pill offline-ready">
-            <span class="pulse-dot"></span>
+    <div class="flex items-center gap-3">
+        <span class="badge-status-green py-1.5 px-3">
+            <span class="w-2 h-2 rounded-full bg-academic-green-500 animate-pulse"></span>
             Draft saved on this device
         </span>
-        <button class="btn btn-primary" style="background-color: var(--primary-navy);" @onclick="NavigateToWorkspace">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        <button class="btn-primary" @onclick="NavigateToWorkspace">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
             </svg>
             Continue Draft
         </button>
     </div>
 </div>
 
-<!-- Meta 4-Column Grid -->
-<div class="grid-4" style="margin-bottom: 2rem;">
-    <div class="card" style="padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.85rem;">
-        <div style="background-color: var(--bg-surface-secondary); padding: 0.6rem; border-radius: 8px; font-size: 1.1rem;">📅</div>
+<!-- 4 Meta Boxes Grid -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="card-base p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📅</div>
         <div>
-            <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">DUE DATE</div>
-            <div style="font-weight: 600; font-size: 0.88rem;">Oct 4 · 11:59 PM</div>
+            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Due Date</div>
+            <div class="text-xs font-semibold text-slate-800">Oct 4 · 11:59 PM</div>
         </div>
     </div>
 
-    <div class="card" style="padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.85rem;">
-        <div style="background-color: var(--bg-surface-secondary); padding: 0.6rem; border-radius: 8px; font-size: 1.1rem;">⏱️</div>
+    <div class="card-base p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">⏱️</div>
         <div>
-            <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">ESTIMATED TIME</div>
-            <div style="font-weight: 600; font-size: 0.88rem;">4–6 hours</div>
+            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Estimated Time</div>
+            <div class="text-xs font-semibold text-slate-800">4–6 hours</div>
         </div>
     </div>
 
-    <div class="card" style="padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.85rem;">
-        <div style="background-color: var(--bg-surface-secondary); padding: 0.6rem; border-radius: 8px; font-size: 1.1rem;">🎖️</div>
+    <div class="card-base p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🎖️</div>
         <div>
-            <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">POINTS</div>
-            <div style="font-weight: 600; font-size: 0.88rem;">100 points</div>
+            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Points</div>
+            <div class="text-xs font-semibold text-slate-800">100 points</div>
         </div>
     </div>
 
-    <div class="card" style="padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.85rem;">
-        <div style="background-color: var(--bg-surface-secondary); padding: 0.6rem; border-radius: 8px; font-size: 1.1rem;">🚀</div>
+    <div class="card-base p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">🚀</div>
         <div>
-            <div style="font-size: 0.68rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">SUBMISSION STATUS</div>
-            <div style="font-weight: 600; font-size: 0.88rem;">Draft in progress</div>
+            <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Submission Status</div>
+            <div class="text-xs font-semibold text-slate-800">Draft in progress</div>
         </div>
     </div>
 </div>
 
-<!-- Main Split Layout: Brief & Requirements (Left) + Submission & Rubric Summary (Right) -->
-<div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 1.5rem;">
+<!-- Main Split: Brief & Requirements (Left) + Submission & Rubric Summary (Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
     <!-- Left Column -->
-    <div class="card" style="display: flex; flex-direction: column; gap: 2rem;">
-        <!-- 01 Brief -->
+    <div class="card-base p-6 space-y-6">
         <div>
-            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 0.35rem;">
-                01 · ASSIGNMENT BRIEF
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                01 · Assignment Brief
             </div>
-            <h2 style="font-family: var(--font-serif); font-size: 1.45rem; margin-bottom: 0.75rem;">
+            <h2 class="font-serif text-xl font-bold text-slate-900 mb-3">
                 Observe, test, and explain recovery behavior
             </h2>
-            <p style="font-size: 0.92rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+            <p class="text-sm text-slate-600 leading-relaxed mb-4">
                 Design a small experiment that interrupts a running storage task, then document how the system recovers. Compare at least two recovery strategies, explain the trade-offs you observed, and support your conclusion with measured evidence.
             </p>
 
-            <div style="background-color: var(--accent-green-light); border-left: 3px solid var(--accent-green); padding: 0.85rem 1rem; border-radius: 0 var(--radius-md) var(--radius-md) 0; font-size: 0.88rem; color: var(--accent-green);">
-                💡 <strong>Focus on what your results mean:</strong> A short, well-supported explanation is stronger than a long list of observations.
+            <div class="bg-academic-green-50/70 border-l-4 border-l-academic-green-500 rounded-r-xl p-3.5 text-xs text-academic-green-700">
+                💡 <strong class="font-semibold">Focus on what your results mean:</strong> A short, well-supported explanation is stronger than a long list of observations.
             </div>
         </div>
 
-        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
-            <!-- 02 Learning Goals -->
-            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 1rem;">
-                02 · LEARNING GOALS
+        <div class="border-t border-slate-100 pt-6">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">
+                02 · Learning Goals
             </div>
-            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
-                <div style="display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9rem;">
-                    <span style="background-color: var(--bg-surface-secondary); color: var(--text-secondary); font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">01</span>
+            <div class="space-y-3 text-xs text-slate-700">
+                <div class="flex items-start gap-3">
+                    <span class="bg-slate-100 text-slate-600 font-bold px-1.5 py-0.5 rounded text-[10px]">01</span>
                     <span>Explain how failure and recovery affect stored information.</span>
                 </div>
-                <div style="display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9rem;">
-                    <span style="background-color: var(--bg-surface-secondary); color: var(--text-secondary); font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">02</span>
+                <div class="flex items-start gap-3">
+                    <span class="bg-slate-100 text-slate-600 font-bold px-1.5 py-0.5 rounded text-[10px]">02</span>
                     <span>Design a repeatable experiment and interpret its results.</span>
                 </div>
-                <div style="display: flex; align-items: flex-start; gap: 0.75rem; font-size: 0.9rem;">
-                    <span style="background-color: var(--bg-surface-secondary); color: var(--text-secondary); font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">03</span>
+                <div class="flex items-start gap-3">
+                    <span class="bg-slate-100 text-slate-600 font-bold px-1.5 py-0.5 rounded text-[10px]">03</span>
                     <span>Communicate system behavior with clear figures and evidence.</span>
                 </div>
             </div>
         </div>
 
-        <div style="border-top: 1px solid var(--border-subtle); padding-top: 1.5rem;">
-            <!-- 03 Requirements -->
-            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 1rem;">
-                03 · REQUIREMENTS
+        <div class="border-t border-slate-100 pt-6">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">
+                03 · Requirements
             </div>
-            <div class="grid-2" style="gap: 0.85rem; font-size: 0.88rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">1,200–1,600 words</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">1,200–1,600 words</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">Submit as PDF or Markdown</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">Submit as PDF or Markdown</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">One comparison table</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">One comparison table</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">Include methods and limitations</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">Include methods and limitations</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">At least two labeled figures</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">At least two labeled figures</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">Use the provided sample data</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">Use the provided sample data</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">Three or more course references</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">Three or more course references</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent-green);">
-                    <span>✔</span> <span style="color: var(--text-secondary);">Name files with your student ID</span>
+                <div class="flex items-center gap-2 text-academic-green-600">
+                    <span>✔</span> <span class="text-slate-700">Name files with your student ID</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Submission Card + Course Materials + Rubric Summary -->
-    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <!-- Right Column -->
+    <div class="space-y-6">
         <!-- Submission Card -->
-        <div class="card" style="padding: 1.25rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin: 0;">Your submission</h3>
-                <span class="badge badge-slate">Draft</span>
+        <div class="card-base p-5">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="font-serif font-semibold text-base text-slate-900">Your submission</h3>
+                <span class="badge-status-slate text-[10px]">Draft</span>
             </div>
-            <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 1rem;">
+            <span class="text-[11px] text-slate-400 block mb-4">
                 Last saved today at 10:18 AM
             </span>
 
-            <div style="background-color: var(--bg-canvas); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 0.88rem;">
+            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3.5 mb-4">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
                     <span>Lab Report 3 Draft</span>
-                    <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: normal;">842 words</span>
+                    <span class="text-slate-400 font-normal">842 words</span>
                 </div>
-                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.2rem;">
+                <div class="text-[11px] text-slate-400 mt-1">
                     Saved on this device · Ready to continue
                 </div>
             </div>
 
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 0.5rem; background-color: var(--primary-navy);" @onclick="NavigateToWorkspace">
+            <button class="btn-primary w-full mb-2" @onclick="NavigateToWorkspace">
                 Continue Draft
             </button>
-            <button class="btn btn-secondary" style="width: 100%;" @onclick="NavigateToWorkspace">
+            <button class="btn-secondary w-full text-xs" @onclick="NavigateToWorkspace">
                 + Start a New Draft
             </button>
         </div>
 
         <!-- Course Materials -->
-        <div class="card" style="padding: 1.25rem;">
-            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Course materials</h3>
-            <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 1rem;">
+        <div class="card-base p-5">
+            <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Course materials</h3>
+            <span class="text-[11px] text-slate-400 block mb-4">
                 Available without a connection
             </span>
 
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background-color: var(--bg-canvas); border-radius: var(--radius-md); font-size: 0.85rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>📄</span>
+            <div class="space-y-2 text-xs">
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-sm">📄</span>
                         <div>
-                            <strong>Lab 3 guide.pdf</strong>
-                            <div style="font-size: 0.72rem; color: var(--text-muted);">1.8 MB</div>
+                            <div class="font-semibold text-slate-800">Lab 3 guide.pdf</div>
+                            <div class="text-[10px] text-slate-400">1.8 MB</div>
                         </div>
                     </div>
-                    <span style="cursor: pointer;">⬇</span>
+                    <span class="text-slate-400">⬇</span>
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background-color: var(--bg-canvas); border-radius: var(--radius-md); font-size: 0.85rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>📊</span>
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-sm">📊</span>
                         <div>
-                            <strong>Sample recovery data.csv</strong>
-                            <div style="font-size: 0.72rem; color: var(--text-muted);">420 KB</div>
+                            <div class="font-semibold text-slate-800">Sample recovery data.csv</div>
+                            <div class="text-[10px] text-slate-400">420 KB</div>
                         </div>
                     </div>
-                    <span style="cursor: pointer;">⬇</span>
+                    <span class="text-slate-400">⬇</span>
                 </div>
 
-                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0.75rem; background-color: var(--bg-canvas); border-radius: var(--radius-md); font-size: 0.85rem;">
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <span>📦</span>
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer">
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-sm">📦</span>
                         <div>
-                            <strong>Experiment starter files.zip</strong>
-                            <div style="font-size: 0.72rem; color: var(--text-muted);">2.3 MB</div>
+                            <div class="font-semibold text-slate-800">Experiment starter files.zip</div>
+                            <div class="text-[10px] text-slate-400">2.3 MB</div>
                         </div>
                     </div>
-                    <span style="cursor: pointer;">⬇</span>
+                    <span class="text-slate-400">⬇</span>
                 </div>
             </div>
         </div>
 
         <!-- Rubric Summary -->
-        <div class="card" style="padding: 1.25rem;">
-            <h3 style="font-family: var(--font-serif); font-size: 1.15rem; margin-bottom: 0.2rem;">Rubric summary</h3>
-            <span style="font-size: 0.78rem; color: var(--text-muted); display: block; margin-bottom: 1rem;">
+        <div class="card-base p-5">
+            <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Rubric summary</h3>
+            <span class="text-[11px] text-slate-400 block mb-4">
                 How your work will be assessed
             </span>
 
-            <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.85rem; margin-bottom: 1.25rem;">
-                <div style="display: flex; justify-content: space-between;">
+            <div class="space-y-3 text-xs mb-4">
+                <div class="flex justify-between">
                     <div>
-                        <strong>Technical depth</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Clear systems reasoning, accurate analysis</div>
+                        <div class="font-semibold text-slate-800">Technical depth</div>
+                        <div class="text-[10px] text-slate-400">Clear reasoning &amp; analysis</div>
                     </div>
-                    <strong style="color: var(--accent-green);">40%</strong>
+                    <strong class="text-academic-green-600 font-semibold">40%</strong>
                 </div>
 
-                <div style="display: flex; justify-content: space-between;">
+                <div class="flex justify-between">
                     <div>
-                        <strong>Experimental method</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Repeatable steps, meaningful measurements</div>
+                        <div class="font-semibold text-slate-800">Experimental method</div>
+                        <div class="text-[10px] text-slate-400">Repeatable steps &amp; data</div>
                     </div>
-                    <strong style="color: var(--accent-green);">30%</strong>
+                    <strong class="text-academic-green-600 font-semibold">30%</strong>
                 </div>
 
-                <div style="display: flex; justify-content: space-between;">
+                <div class="flex justify-between">
                     <div>
-                        <strong>Communication</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Focused structure, readable figures</div>
+                        <div class="font-semibold text-slate-800">Communication</div>
+                        <div class="text-[10px] text-slate-400">Focused structure &amp; figures</div>
                     </div>
-                    <strong style="color: var(--accent-green);">20%</strong>
+                    <strong class="text-academic-green-600 font-semibold">20%</strong>
                 </div>
 
-                <div style="display: flex; justify-content: space-between;">
+                <div class="flex justify-between">
                     <div>
-                        <strong>References</strong>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Sources cited consistently</div>
+                        <div class="font-semibold text-slate-800">References</div>
+                        <div class="text-[10px] text-slate-400">Sources cited consistently</div>
                     </div>
-                    <strong style="color: var(--accent-green);">10%</strong>
+                    <strong class="text-academic-green-600 font-semibold">10%</strong>
                 </div>
             </div>
 
-            <button class="btn btn-outline btn-sm" style="width: 100%;" @onclick='() => Navigation.NavigateTo("/dashboard")'>
+            <button class="btn-outline w-full text-xs" @onclick='() => Navigation.NavigateTo("/dashboard")'>
                 View full rubric &rarr;
             </button>
         </div>

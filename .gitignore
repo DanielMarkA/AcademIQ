@@ -9,6 +9,11 @@ obj/
 .vscode/
 .idea/
 
+## Node / NPM
+node_modules/
+package-lock.json
+
+## Internal Spec Folder
 test/
 
 ## OS & Temporary Files

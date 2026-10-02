@@ -2,51 +2,48 @@
 @inject NavigationManager Navigation
 @implements IDisposable
 
-<header class="academiq-navbar">
-    <div class="nav-left">
-        <a href="/" class="brand-logo">
-            <div class="brand-icon">A</div>
-            <span class="brand-name">AcademIQ</span>
+<header class="bg-white border-b border-slate-200/80 sticky top-0 z-50 px-4 sm:px-8 py-3 flex items-center justify-between shadow-xs">
+    <div class="flex items-center gap-8">
+        <a href="/" class="flex items-center gap-2.5 text-slate-900 group">
+            <div class="w-8 h-8 rounded-lg bg-navy-800 text-white flex items-center justify-center font-serif font-bold text-lg shadow-sm group-hover:bg-navy-900 transition-colors">
+                A
+            </div>
+            <span class="font-serif text-xl font-bold tracking-tight text-navy-900">AcademIQ</span>
         </a>
 
-        <ul class="nav-links">
-            <li>
-                <NavLink class="nav-link-item" href="courses" Match="NavLinkMatch.Prefix">
-                    My Courses
-                </NavLink>
-            </li>
-            <li>
-                <NavLink class="nav-link-item" href="activity">
-                    Activity
-                </NavLink>
-            </li>
-            <li>
-                <NavLink class="nav-link-item" href="sync">
-                    Saved &amp; Sync
-                </NavLink>
-            </li>
-            <li>
-                <NavLink class="nav-link-item" href="" Match="NavLinkMatch.All">
-                    Grading Hub
-                </NavLink>
-            </li>
-        </ul>
+        <nav class="hidden md:flex items-center gap-6">
+            <NavLink class="text-sm font-medium text-slate-600 hover:text-navy-800 transition-colors relative py-1" href="courses" Match="NavLinkMatch.Prefix" ActiveClass="!text-navy-800 !font-semibold after:content-[''] after:absolute after:bottom-[-13px] after:left-0 after:right-0 after:h-0.5 after:bg-navy-800">
+                My Courses
+            </NavLink>
+            <NavLink class="text-sm font-medium text-slate-600 hover:text-navy-800 transition-colors relative py-1" href="activity" ActiveClass="!text-navy-800 !font-semibold after:content-[''] after:absolute after:bottom-[-13px] after:left-0 after:right-0 after:h-0.5 after:bg-navy-800">
+                Activity
+            </NavLink>
+            <NavLink class="text-sm font-medium text-slate-600 hover:text-navy-800 transition-colors relative py-1" href="sync" ActiveClass="!text-navy-800 !font-semibold after:content-[''] after:absolute after:bottom-[-13px] after:left-0 after:right-0 after:h-0.5 after:bg-navy-800">
+                Saved &amp; Sync
+            </NavLink>
+            <NavLink class="text-sm font-medium text-slate-600 hover:text-navy-800 transition-colors relative py-1" href="" Match="NavLinkMatch.All" ActiveClass="!text-navy-800 !font-semibold after:content-[''] after:absolute after:bottom-[-13px] after:left-0 after:right-0 after:h-0.5 after:bg-navy-800">
+                Grading Hub
+            </NavLink>
+        </nav>
     </div>
 
-    <div class="nav-right">
-        <!-- Offline Status Pill -->
-        <button class="status-pill available-offline" style="cursor: pointer; border: 1px solid var(--accent-green-border);" @onclick="State.ToggleOfflineMode" title="Click to toggle simulated connection">
-            <span class="pulse-dot"></span>
+    <div class="flex items-center gap-4">
+        <!-- Live Offline / Online Badge -->
+        <button type="button" 
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium cursor-pointer transition-all border @(State.IsOfflineMode ? "bg-academic-green-50 text-academic-green-600 border-academic-green-200" : "bg-academic-blue-50 text-academic-blue-600 border-academic-blue-200")"
+                @onclick="State.ToggleOfflineMode">
+            <span class="w-2 h-2 rounded-full @(State.IsOfflineMode ? "bg-academic-green-500 animate-pulse" : "bg-academic-blue-500")"></span>
             <span>@(State.IsOfflineMode ? "Available offline" : "Online & Synced")</span>
         </button>
 
-        <!-- User Profile Pill / Role Switcher -->
-        <div class="user-badge" @onclick="ToggleUserRole" title="Click to switch between Student (Maya Chen) and Instructor (Prof. Lee)">
-            <div class="user-info-text">
-                <div class="user-role-label">@State.CurrentUser.Role.ToString().ToUpper()</div>
-                <div class="user-name">@State.CurrentUser.FullName</div>
+        <!-- Switchable Profile Avatar -->
+        <div class="flex items-center gap-3 p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
+             @onclick="ToggleUserRole">
+            <div class="text-right hidden sm:block">
+                <div class="text-[10px] font-bold tracking-wider uppercase text-slate-400">@State.CurrentUser.Role.ToString().ToUpper()</div>
+                <div class="text-xs font-semibold text-slate-800">@State.CurrentUser.FullName</div>
             </div>
-            <div class="user-avatar">
+            <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-semibold text-xs text-slate-700">
                 @(State.CurrentUser.Role == UserRole.Instructor ? "PL" : "MC")
             </div>
         </div>
