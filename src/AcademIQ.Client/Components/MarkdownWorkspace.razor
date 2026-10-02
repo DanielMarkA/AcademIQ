@@ -1,5 +1,6 @@
 @inject AppStateService State
 @inject NavigationManager Navigation
+@implements IDisposable
 
 <div class="mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div class="flex items-center gap-3">
@@ -24,14 +25,14 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            Saved on this device
+            @(State.ActiveDraft?.SyncStatus == SyncStatus.Synced ? "Submitted" : "Saved on this device")
         </span>
         <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="ToggleFullPreview">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
             </svg>
-            Preview submission
+            @(IsPreviewOnly ? "Split View" : "Preview submission")
         </button>
         <button class="btn-primary !py-1.5 !px-3 text-xs" @onclick="SubmitAssignment">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +43,6 @@
     </div>
 </div>
 
-<!-- Formatting Toolbar -->
 <div class="bg-white border border-slate-200 rounded-t-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2 border-b-0 shadow-2xs">
     <div class="flex items-center gap-1">
         <select class="px-2 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700 focus:outline-none" @onchange="OnFormatStyleSelected">
@@ -68,45 +68,44 @@
     </div>
 </div>
 
-<!-- 3-Column Split Workspace -->
-<div class="grid grid-cols-1 md:grid-cols-[200px_1fr_1fr] bg-white border border-slate-200 rounded-b-2xl overflow-hidden min-h-[560px] shadow-sm">
-    <!-- Column 1: Document Outline -->
-    <div class="border-r border-slate-200 p-4 flex flex-col justify-between bg-slate-50/50">
-        <div>
-            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Document Outline</div>
-            <div class="space-y-1 text-xs">
-                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">1 Introduction</div>
-                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">2 Method</div>
-                <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer">2.1 Test environment</div>
-                <div class="px-2.5 py-1.5 rounded-lg bg-academic-blue-50 text-academic-blue-600 font-semibold cursor-pointer">3 Results</div>
-                <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer">3.1 Recovery time</div>
-                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">4 Discussion</div>
-                <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer">4.1 Limitations</div>
-                <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer">5 References</div>
+<div class="grid grid-cols-1 @(IsPreviewOnly ? "md:grid-cols-1" : "md:grid-cols-[200px_1fr_1fr]") bg-white border border-slate-200 rounded-b-2xl overflow-hidden min-h-[560px] shadow-sm">
+    @if (!IsPreviewOnly)
+    {
+        <div class="border-r border-slate-200 p-4 flex flex-col justify-between bg-slate-50/50">
+            <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">Document Outline</div>
+                <div class="space-y-1 text-xs">
+                    <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("# Introduction\n")'>1 Introduction</div>
+                    <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("## Method\n")'>2 Method</div>
+                    <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("### Test environment\n")'>2.1 Test environment</div>
+                    <div class="px-2.5 py-1.5 rounded-lg bg-academic-blue-50 text-academic-blue-600 font-semibold cursor-pointer" @onclick='() => InsertMarkdown("## Results\n")'>3 Results</div>
+                    <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("### Recovery time\n")'>3.1 Recovery time</div>
+                    <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("## Discussion\n")'>4 Discussion</div>
+                    <div class="pl-5 pr-2.5 py-1 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("### Limitations\n")'>4.1 Limitations</div>
+                    <div class="px-2.5 py-1.5 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer" @onclick='() => InsertMarkdown("## References\n")'>5 References</div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200">
+                <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mb-1.5">
+                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 62%;"></div>
+                </div>
+                <div class="text-[11px] text-slate-400">5 of 8 sections drafted</div>
             </div>
         </div>
 
-        <div class="pt-4 border-t border-slate-200">
-            <div class="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden mb-1.5">
-                <div class="h-full bg-academic-green-500 rounded-full" style="width: 62%;"></div>
+        <div class="bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800">
+            <div class="bg-slate-950/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between border-b border-slate-800">
+                <span>Markdown</span>
+                <span class="font-mono text-[10px] text-slate-500">Line @(MarkdownContent.Split('\n').Length), @MarkdownContent.Length chars</span>
             </div>
-            <div class="text-[11px] text-slate-400">5 of 8 sections drafted</div>
+            <textarea class="flex-1 w-full p-4 bg-transparent text-slate-100 font-mono text-xs leading-relaxed resize-none focus:outline-none placeholder-slate-600 min-h-[460px]"
+                      value="@MarkdownContent" 
+                      @oninput="OnContentChanged"
+                      placeholder="Type your coursework in markdown..."></textarea>
         </div>
-    </div>
+    }
 
-    <!-- Column 2: Raw Markdown Editor (Dark) -->
-    <div class="bg-slate-900 text-slate-100 flex flex-col border-r border-slate-800">
-        <div class="bg-slate-950/80 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between border-b border-slate-800">
-            <span>Markdown</span>
-            <span class="font-mono text-[10px] text-slate-500">Line 24, column 18</span>
-        </div>
-        <textarea class="flex-1 w-full p-4 bg-transparent text-slate-100 font-mono text-xs leading-relaxed resize-none focus:outline-none placeholder-slate-600"
-                  value="@MarkdownContent" 
-                  @oninput="OnContentChanged"
-                  placeholder="Type your coursework in markdown..."></textarea>
-    </div>
-
-    <!-- Column 3: Live HTML Preview (Light) -->
     <div class="bg-white flex flex-col overflow-y-auto max-h-[600px]">
         <div class="bg-slate-50 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500 flex items-center justify-between border-b border-slate-100">
             <span>HTML Preview</span>
@@ -118,7 +117,6 @@
     </div>
 </div>
 
-<!-- Bottom Status Bar -->
 <div class="card-base mt-4 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
     <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-academic-green-50 text-academic-green-600 flex items-center justify-center text-sm font-bold">
@@ -132,7 +130,7 @@
 
     <div class="flex items-center gap-4">
         <span class="text-xs text-slate-500 flex items-center gap-1.5">
-            📎 <strong class="font-semibold text-slate-700">2 attachments</strong> (recovery-chart.png, results.csv)
+            📎 <strong class="font-semibold text-slate-700">@Attachments.Count attachments</strong> (@string.Join(", ", Attachments))
         </span>
         <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="AddAttachmentModal">
             + Add attachment
@@ -143,11 +141,24 @@
 @code {
     private string MarkdownContent { get; set; } = string.Empty;
     private string RenderedHtml { get; set; } = string.Empty;
+    private bool IsPreviewOnly { get; set; } = false;
+    private List<string> Attachments { get; set; } = new() { "recovery-chart.png", "results.csv" };
 
     protected override void OnInitialized()
     {
+        State.OnChange += HandleStateChanged;
         MarkdownContent = State.ActiveDraft?.MarkdownContent ?? string.Empty;
         UpdatePreview();
+    }
+
+    private void HandleStateChanged()
+    {
+        if (MarkdownContent != State.ActiveDraft?.MarkdownContent)
+        {
+            MarkdownContent = State.ActiveDraft?.MarkdownContent ?? string.Empty;
+            UpdatePreview();
+        }
+        StateHasChanged();
     }
 
     private void OnContentChanged(ChangeEventArgs e)
@@ -159,8 +170,15 @@
 
     private void UpdatePreview()
     {
-        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-        RenderedHtml = Markdown.ToHtml(MarkdownContent, pipeline);
+        try
+        {
+            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            RenderedHtml = Markdown.ToHtml(MarkdownContent, pipeline);
+        }
+        catch
+        {
+            RenderedHtml = $"<pre class='whitespace-pre-wrap'>{System.Net.WebUtility.HtmlEncode(MarkdownContent)}</pre>";
+        }
     }
 
     private void InsertMarkdown(string prefix, string suffix = "")
@@ -172,7 +190,7 @@
 
     private void InsertTable()
     {
-        MarkdownContent += "\n\n| Item | Metric | Status |\n| :--- | :--- | :--- |\n| Benchmark 1 | 84 ms | Passed |\n| Benchmark 2 | 127 ms | Passed |\n";
+        MarkdownContent += "\n\n| Strategy | Median | Data restored |\n| :--- | :---: | :---: |\n| Checkpoint | 84 ms | 100% |\n| Log replay | 127 ms | 100% |\n";
         State.SaveActiveDraft(MarkdownContent);
         UpdatePreview();
     }
@@ -190,12 +208,26 @@
         Navigation.NavigateTo("/assignment/1");
     }
 
-    private void ToggleFullPreview() { }
+    private void ToggleFullPreview()
+    {
+        IsPreviewOnly = !IsPreviewOnly;
+    }
 
     private void SubmitAssignment()
     {
-        Navigation.NavigateTo("/");
+        State.SubmitCurrentDraft();
+        Navigation.NavigateTo("/dashboard");
     }
 
-    private void AddAttachmentModal() { }
+    private void AddAttachmentModal()
+    {
+        var name = $"attachment-{Attachments.Count + 1}.png";
+        Attachments.Add(name);
+        State.TriggerToast($"Added attachment: {name}");
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= HandleStateChanged;
+    }
 }

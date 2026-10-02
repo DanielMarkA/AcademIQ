@@ -11,6 +11,7 @@ namespace AcademIQ.Client.Services;
 public class AppStateService
 {
     public event Action? OnChange;
+    public event Action<string, string>? OnToast;
 
     public bool IsOfflineMode { get; set; } = true;
     public UserProfile CurrentUser { get; set; } = new();
@@ -19,14 +20,19 @@ public class AppStateService
     public List<SubmissionDraft> Drafts { get; set; } = new();
     public List<Milestone> Milestones { get; set; } = new();
     public List<ActivityNotification> Notifications { get; set; } = new();
+    public List<string> PendingUploadFiles { get; set; } = new() { "recovery-chart.png", "results.csv" };
 
-    // Active Rubric Scoring State for Instructor Hub
     public Guid CurrentSubmissionId { get; set; } = Guid.NewGuid();
     public Dictionary<Guid, RubricEvaluation> ActiveEvaluations { get; set; } = new();
     public string OverallGradingFeedback { get; set; } = "Strong analysis overall. Make sure to cite performance comparison tables in the final revision.";
 
-    // Active draft being edited in Workspace
     public SubmissionDraft? ActiveDraft { get; set; }
+    public Dictionary<string, bool> CourseOfflineStatus { get; set; } = new()
+    {
+        { "CS-401", true },
+        { "CS-315", true },
+        { "ENG-210", false }
+    };
 
     public AppStateService()
     {
@@ -35,9 +41,15 @@ public class AppStateService
 
     private void NotifyStateChanged() => OnChange?.Invoke();
 
+    public void TriggerToast(string message, string type = "success")
+    {
+        OnToast?.Invoke(message, type);
+    }
+
     public void ToggleOfflineMode()
     {
         IsOfflineMode = !IsOfflineMode;
+        TriggerToast(IsOfflineMode ? "Switched to Simulated Offline Mode" : "Connected to Campus Network & Synced", IsOfflineMode ? "info" : "success");
         NotifyStateChanged();
     }
 
@@ -56,6 +68,7 @@ public class AppStateService
                 OfflineModeEnabled = true,
                 AutoSyncEnabled = true
             };
+            TriggerToast("Switched user context to Prof. Lee (Instructor)");
         }
         else
         {
@@ -69,11 +82,12 @@ public class AppStateService
                 Major = "B.S. Software Engineering",
                 CurrentSemester = 6,
                 CumulativeGpa = 3.88,
-                StorageQuotaBytes = 2147483648, // 2GB
-                UsedStorageBytes = 509607936,   // 486MB
+                StorageQuotaBytes = 2147483648,
+                UsedStorageBytes = 509607936,
                 OfflineModeEnabled = true,
                 AutoSyncEnabled = true
             };
+            TriggerToast("Switched user context to Maya Chen (Student)");
         }
         NotifyStateChanged();
     }
@@ -122,18 +136,109 @@ public class AppStateService
         NotifyStateChanged();
     }
 
+    public void CreateNewDraft(Guid assignmentId, string title)
+    {
+        var newDraft = new SubmissionDraft
+        {
+            Id = Guid.NewGuid(),
+            AssignmentId = assignmentId,
+            StudentId = CurrentUser.Id,
+            AssignmentTitle = title,
+            MarkdownContent = $"# {title}\n\n## Introduction\nEnter project background and goals here.\n\n## Methodology\nDescribe test setup and implementation.",
+            LastSavedLocallyAt = DateTime.UtcNow,
+            SyncStatus = SyncStatus.LocalOnly,
+            WordCount = 18,
+            CharacterCount = 120,
+            Version = 1
+        };
+
+        Drafts.Insert(0, newDraft);
+        ActiveDraft = newDraft;
+        TriggerToast($"Created new draft: {title}");
+        NotifyStateChanged();
+    }
+
+    public void SubmitCurrentDraft()
+    {
+        if (ActiveDraft == null) return;
+
+        ActiveDraft.SyncStatus = SyncStatus.Synced;
+        Notifications.Insert(0, new ActivityNotification
+        {
+            Id = Guid.NewGuid(),
+            Title = $"{ActiveDraft.AssignmentTitle} Submitted",
+            Message = "Your coursework draft has been finalized and queued for instructor grading.",
+            Timestamp = DateTime.UtcNow,
+            Type = NotificationType.General,
+            IsRead = false,
+            CourseCode = "CS-401"
+        });
+
+        TriggerToast($"{ActiveDraft.AssignmentTitle} successfully submitted!");
+        NotifyStateChanged();
+    }
+
+    public void SyncPendingUploads()
+    {
+        if (PendingUploadFiles.Count == 0)
+        {
+            TriggerToast("No pending uploads in the local sync queue.", "info");
+            return;
+        }
+
+        var count = PendingUploadFiles.Count;
+        PendingUploadFiles.Clear();
+
+        Notifications.Insert(0, new ActivityNotification
+        {
+            Id = Guid.NewGuid(),
+            Title = "Uploads successfully synchronized",
+            Message = $"{count} file attachments were uploaded to university servers.",
+            Timestamp = DateTime.UtcNow,
+            Type = NotificationType.SyncCompleted,
+            IsRead = false,
+            CourseCode = "Saved work"
+        });
+
+        TriggerToast($"Successfully uploaded {count} attachments!");
+        NotifyStateChanged();
+    }
+
+    public void RefreshCourseMaterials()
+    {
+        TriggerToast("Course materials updated and cached for offline use!");
+        NotifyStateChanged();
+    }
+
+    public void ToggleCourseOffline(string courseCode)
+    {
+        if (CourseOfflineStatus.TryGetValue(courseCode, out var isOffline))
+        {
+            CourseOfflineStatus[courseCode] = !isOffline;
+            var state = CourseOfflineStatus[courseCode] ? "downloaded for offline use" : "removed from local storage";
+            TriggerToast($"{courseCode} {state}");
+            NotifyStateChanged();
+        }
+    }
+
+    public Course? GetCourseByCode(string code)
+    {
+        return Courses.FirstOrDefault(c => string.Equals(c.Code, code, StringComparison.OrdinalIgnoreCase)) 
+               ?? Courses.FirstOrDefault();
+    }
+
     public void MarkAllNotificationsAsRead()
     {
         foreach (var notif in Notifications)
         {
             notif.IsRead = true;
         }
+        TriggerToast("Marked all notifications as read");
         NotifyStateChanged();
     }
 
     private void InitializeSeedData()
     {
-        // 1. Current Student
         CurrentUser = new UserProfile
         {
             StudentIdNumber = "STU-20418",
@@ -144,13 +249,12 @@ public class AppStateService
             Major = "B.S. Software Engineering",
             CurrentSemester = 6,
             CumulativeGpa = 3.88,
-            StorageQuotaBytes = 2147483648, // 2 GB
-            UsedStorageBytes = 509607936,   // 486 MB
+            StorageQuotaBytes = 2147483648,
+            UsedStorageBytes = 509607936,
             OfflineModeEnabled = true,
             AutoSyncEnabled = true
         };
 
-        // 2. Courses
         var cs401 = new Course
         {
             Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
@@ -189,7 +293,6 @@ public class AppStateService
 
         Courses = new List<Course> { cs401, cs315, eng210 };
 
-        // 3. Assignment with Rubric Criteria (CS-401 Lab Report 3)
         var lab3Crit1 = new RubricCriterion
         {
             Id = Guid.Parse("a1111111-1111-1111-1111-111111111111"),
@@ -235,7 +338,6 @@ public class AppStateService
 
         Assignments = new List<Assignment> { labReport3 };
 
-        // Initial Active Evaluations (matching 12/15 B+ mockup)
         ActiveEvaluations[lab3Crit1.Id] = new RubricEvaluation
         {
             SubmissionId = CurrentSubmissionId,
@@ -258,7 +360,6 @@ public class AppStateService
             FeedbackNotes = "Cite the performance table and expand setup notes."
         };
 
-        // 4. Drafts for Workspace
         var initialDraft = new SubmissionDraft
         {
             Id = Guid.NewGuid(),
@@ -327,7 +428,6 @@ Through consistent state journaling, offline data mutations remain reliable acro
         Drafts = new List<SubmissionDraft> { initialDraft, draft2, draft3 };
         ActiveDraft = initialDraft;
 
-        // 5. Timeline Milestones for Gantt Tracker
         Milestones = new List<Milestone>
         {
             new Milestone
@@ -365,7 +465,6 @@ Through consistent state journaling, offline data mutations remain reliable acro
             }
         };
 
-        // 6. Notifications
         Notifications = new List<ActivityNotification>
         {
             new ActivityNotification

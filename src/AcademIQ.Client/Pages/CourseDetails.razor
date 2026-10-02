@@ -1,34 +1,33 @@
 @page "/course/{CourseId}"
 @inject AppStateService State
 @inject NavigationManager Navigation
+@implements IDisposable
 
-<!-- Breadcrumb -->
 <div class="flex items-center gap-2 text-xs text-slate-400 mb-4">
     <a href="courses" class="hover:text-slate-800 transition-colors">My Courses</a>
     <span>/</span>
-    <span class="text-slate-800 font-semibold">CS-401 Advanced Systems</span>
+    <span class="text-slate-800 font-semibold">@Course.Code @Course.Title</span>
 </div>
 
-<!-- Header -->
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div>
         <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
-            CS-401 · Fall 2026
+            @Course.Code · @Course.AcademicTerm
         </div>
         <h1 class="font-serif text-3xl font-bold text-slate-900 mb-1">
-            Advanced Systems
+            @Course.Title
         </h1>
         <p class="text-sm text-slate-500">
-            Study modern operating systems through reliability, concurrency, storage, and hands-on system design.
+            @Course.Description
         </p>
     </div>
 
     <div class="flex items-center gap-3">
-        <span class="badge-status-green py-1.5 px-3">
-            <span class="w-2 h-2 rounded-full bg-academic-green-500 animate-pulse"></span>
-            Course ready offline
-        </span>
-        <button class="btn-secondary !py-1.5 !px-3 text-xs gap-1.5">
+        <button class="badge-status-green py-1.5 px-3 cursor-pointer" @onclick="ToggleOffline">
+            <span class="w-2 h-2 rounded-full @(IsOffline ? "bg-academic-green-500 animate-pulse" : "bg-slate-400")"></span>
+            @(IsOffline ? "Course ready offline" : "Download offline")
+        </button>
+        <button class="btn-secondary !py-1.5 !px-3 text-xs gap-1.5" @onclick="ShowOptionsMenu">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
             </svg>
@@ -37,19 +36,17 @@
     </div>
 </div>
 
-<!-- Top Section: Instructor Info + Overall Progress -->
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 mb-6">
-    <!-- Instructor Card -->
     <div class="card-base p-6 flex flex-col justify-between">
         <div>
             <div class="flex items-start justify-between gap-4 mb-3">
                 <div class="flex items-center gap-3">
                     <div class="w-11 h-11 rounded-full bg-navy-50 text-navy-800 flex items-center justify-center font-serif font-bold text-base border border-navy-200">
-                        PL
+                        @(Course.InstructorName.StartsWith("Dr.") ? "SM" : Course.InstructorName.StartsWith("Elena") ? "ER" : "PL")
                     </div>
                     <div>
                         <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Instructor</div>
-                        <h3 class="font-serif font-bold text-lg text-slate-900">Prof. Lee</h3>
+                        <h3 class="font-serif font-bold text-lg text-slate-900">@Course.InstructorName</h3>
                     </div>
                 </div>
                 <span class="text-xs text-slate-400">Office hours · Tue &amp; Thu, 2–4 PM</span>
@@ -67,7 +64,6 @@
         </div>
     </div>
 
-    <!-- Overall Progress Card -->
     <div class="card-base p-6 flex flex-col justify-between">
         <div>
             <div class="text-xs text-slate-400 mb-0.5">6 of 10 weeks underway</div>
@@ -91,9 +87,7 @@
     </div>
 </div>
 
-<!-- Bottom Section: Weekly Modules + Sidebar Links -->
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 mb-6">
-    <!-- Weekly Modules List -->
     <div class="card-base overflow-hidden">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div>
@@ -104,7 +98,6 @@
         </div>
 
         <div class="divide-y divide-slate-100">
-            <!-- Week 5 -->
             <div class="p-4 hover:bg-slate-50/80 transition-colors flex items-center justify-between cursor-pointer group bg-academic-blue-50/20"
                  @onclick='() => Navigation.NavigateTo("/assignment/1")'>
                 <div class="flex items-center gap-4">
@@ -124,7 +117,6 @@
                 </div>
             </div>
 
-            <!-- Week 4 -->
             <div class="p-4 hover:bg-slate-50/80 transition-colors flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <span class="badge-status-green font-bold text-xs py-1 px-2.5">
@@ -143,7 +135,6 @@
                 </div>
             </div>
 
-            <!-- Week 3 -->
             <div class="p-4 hover:bg-slate-50/80 transition-colors flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <span class="badge-status-green font-bold text-xs py-1 px-2.5">
@@ -162,7 +153,6 @@
                 </div>
             </div>
 
-            <!-- Week 2 -->
             <div class="p-4 hover:bg-slate-50/80 transition-colors flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <span class="badge-status-green font-bold text-xs py-1 px-2.5">
@@ -183,9 +173,7 @@
         </div>
     </div>
 
-    <!-- Sidebar Cards -->
     <div class="space-y-6">
-        <!-- Quick Links -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-3">Quick links</h3>
             <div class="space-y-2">
@@ -213,7 +201,8 @@
                     <span class="text-slate-400 text-xs">↗</span>
                 </div>
 
-                <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-100 flex items-center justify-between cursor-pointer transition-colors">
+                <div class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-100 flex items-center justify-between cursor-pointer transition-colors"
+                     @onclick="DownloadMaterials">
                     <div class="flex items-center gap-3 text-xs">
                         <span class="text-base">📁</span>
                         <div>
@@ -226,7 +215,6 @@
             </div>
         </div>
 
-        <!-- Upcoming Work -->
         <div class="card-base p-5">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-serif font-semibold text-base text-slate-900">Upcoming work</h3>
@@ -234,7 +222,8 @@
             </div>
 
             <div class="space-y-3">
-                <div class="flex items-center gap-3 text-xs">
+                <div class="flex items-center gap-3 text-xs cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors"
+                     @onclick='() => Navigation.NavigateTo("/assignment/1")'>
                     <div class="bg-academic-amber-50 text-academic-amber-700 font-bold p-1.5 rounded-lg text-center min-w-[38px]">
                         <div class="text-sm leading-none">04</div>
                         <div class="text-[9px] uppercase">OCT</div>
@@ -245,7 +234,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 text-xs">
+                <div class="flex items-center gap-3 text-xs p-1.5">
                     <div class="bg-slate-100 text-slate-600 font-bold p-1.5 rounded-lg text-center min-w-[38px]">
                         <div class="text-sm leading-none">07</div>
                         <div class="text-[9px] uppercase">OCT</div>
@@ -256,7 +245,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-3 text-xs">
+                <div class="flex items-center gap-3 text-xs p-1.5">
                     <div class="bg-slate-100 text-slate-600 font-bold p-1.5 rounded-lg text-center min-w-[38px]">
                         <div class="text-sm leading-none">11</div>
                         <div class="text-[9px] uppercase">OCT</div>
@@ -271,12 +260,11 @@
     </div>
 </div>
 
-<!-- Announcements Banner -->
 <div class="card-base p-5">
     <div class="flex items-center justify-between mb-4">
         <div>
             <h3 class="font-serif font-semibold text-base text-slate-900">Recent announcements</h3>
-            <span class="text-xs text-slate-400">Updates from Prof. Lee</span>
+            <span class="text-xs text-slate-400">Updates from @Course.InstructorName</span>
         </div>
         <a href="#" class="text-xs font-semibold text-navy-800 hover:text-navy-900">View all announcements &rarr;</a>
     </div>
@@ -302,4 +290,32 @@
 
 @code {
     [Parameter] public string? CourseId { get; set; }
+
+    private Course Course => State.GetCourseByCode(CourseId ?? "CS-401") ?? State.Courses.First();
+    private bool IsOffline => State.CourseOfflineStatus.TryGetValue(Course.Code, out var off) && off;
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private void ToggleOffline()
+    {
+        State.ToggleCourseOffline(Course.Code);
+    }
+
+    private void DownloadMaterials()
+    {
+        State.TriggerToast($"Downloaded 28 course materials for {Course.Code}");
+    }
+
+    private void ShowOptionsMenu()
+    {
+        State.TriggerToast($"Course options menu opened for {Course.Code}", "info");
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
 }

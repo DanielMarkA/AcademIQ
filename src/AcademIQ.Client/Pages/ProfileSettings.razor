@@ -1,8 +1,8 @@
 @page "/profile"
 @inject AppStateService State
 @inject NavigationManager Navigation
+@implements IDisposable
 
-<!-- Header -->
 <div class="mb-6">
     <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
         Account Settings
@@ -23,7 +23,6 @@
     </div>
 </div>
 
-<!-- Profile Big Banner (Navy Card) -->
 <div class="bg-navy-800 text-white rounded-2xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow-md border border-navy-700">
     <div class="flex items-center gap-5">
         <div class="w-16 h-16 rounded-full bg-white text-navy-800 flex items-center justify-center font-serif font-bold text-2xl shadow-inner shrink-0">
@@ -34,49 +33,51 @@
                 @State.CurrentUser.FullName
             </h2>
             <div class="text-xs sm:text-sm text-slate-300">
-                @(State.CurrentUser.Role == UserRole.Instructor ? "Associate Professor · Computer Science" : "B.S. Software Engineering · Student #20418")
+                @(State.CurrentUser.Role == UserRole.Instructor ? "Associate Professor · Computer Science" : $"{State.CurrentUser.Major} · Student #{State.CurrentUser.StudentIdNumber}")
             </div>
             <div class="text-xs text-slate-400 mt-0.5">Northbridge University · School of Engineering</div>
         </div>
     </div>
 
     <div class="flex items-center gap-3 self-end sm:self-auto">
-        <button class="btn-secondary !bg-white !text-navy-800 !border-transparent text-xs font-semibold">
+        <button class="btn-secondary !bg-white !text-navy-800 !border-transparent text-xs font-semibold" @onclick="ChangePhoto">
             📷 Change photo
         </button>
-        <button class="btn-outline !text-white !border-white/30 hover:!bg-white/10 text-xs">
+        <button class="btn-outline !text-white !border-white/30 hover:!bg-white/10 text-xs" @onclick="ViewProfile">
             ↗ View public profile
         </button>
     </div>
 </div>
 
-<!-- Split Grid: Sidebar Navigation + Settings Cards -->
 <div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-8 mb-8">
-    <!-- Navigation Sidebar -->
     <div class="space-y-1 text-xs">
-        <div class="px-3 py-2 rounded-xl bg-academic-blue-50 text-academic-blue-600 font-semibold cursor-pointer">
+        <div class="px-3 py-2 rounded-xl @(ActiveSection == "account" ? "bg-academic-blue-50 text-academic-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100") cursor-pointer"
+             @onclick='() => ActiveSection = "account"'>
             👤 Account
         </div>
-        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
+        <div class="px-3 py-2 rounded-xl @(ActiveSection == "appearance" ? "bg-academic-blue-50 text-academic-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100") cursor-pointer"
+             @onclick='() => ActiveSection = "appearance"'>
             🎨 Appearance
         </div>
-        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
+        <div class="px-3 py-2 rounded-xl @(ActiveSection == "notifications" ? "bg-academic-blue-50 text-academic-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100") cursor-pointer"
+             @onclick='() => ActiveSection = "notifications"'>
             🔔 Notifications
         </div>
-        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
+        <div class="px-3 py-2 rounded-xl @(ActiveSection == "offline" ? "bg-academic-blue-50 text-academic-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100") cursor-pointer"
+             @onclick='() => ActiveSection = "offline"'>
             ☁️ Offline preferences
         </div>
-        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
+        <div class="px-3 py-2 rounded-xl @(ActiveSection == "privacy" ? "bg-academic-blue-50 text-academic-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100") cursor-pointer"
+             @onclick='() => ActiveSection = "privacy"'>
             🛡️ Privacy
         </div>
-        <div class="px-3 py-2 rounded-xl text-slate-600 hover:bg-slate-100 cursor-pointer">
+        <div class="px-3 py-2 rounded-xl @(ActiveSection == "accessibility" ? "bg-academic-blue-50 text-academic-blue-600 font-semibold" : "text-slate-600 hover:bg-slate-100") cursor-pointer"
+             @onclick='() => ActiveSection = "accessibility"'>
             ♿ Accessibility
         </div>
     </div>
 
-    <!-- Main Settings Cards -->
     <div class="space-y-6">
-        <!-- Account Info -->
         <div class="card-base p-6">
             <h3 class="font-serif font-bold text-lg text-slate-900 mb-0.5">Account</h3>
             <p class="text-xs text-slate-400 mb-5">Your university profile and sign-in details</p>
@@ -103,15 +104,13 @@
 
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-slate-100 pt-4 text-xs">
                 <span class="text-slate-400">Password changes are handled through your university account.</span>
-                <button class="btn-secondary !py-1.5 !px-3 text-xs">
+                <button class="btn-secondary !py-1.5 !px-3 text-xs" @onclick="ManageAccount">
                     ↗ Manage university account
                 </button>
             </div>
         </div>
 
-        <!-- 2x2 Grid: Appearance, Notifications, Offline Preferences, Privacy -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Appearance -->
             <div class="card-base p-5">
                 <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Appearance</h3>
                 <p class="text-xs text-slate-400 mb-4">Choose a comfortable reading experience</p>
@@ -151,7 +150,6 @@
                 </div>
             </div>
 
-            <!-- Notifications -->
             <div class="card-base p-5">
                 <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Notifications</h3>
                 <p class="text-xs text-slate-400 mb-4">Control the updates you receive</p>
@@ -183,7 +181,6 @@
                 </div>
             </div>
 
-            <!-- Offline Preferences -->
             <div class="card-base p-5">
                 <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Offline preferences</h3>
                 <p class="text-xs text-slate-400 mb-4">Choose what is kept on this device</p>
@@ -194,7 +191,7 @@
                             <strong class="text-slate-800">Save active courses automatically</strong>
                             <div class="text-slate-400 text-[11px]">Keep materials cached.</div>
                         </div>
-                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
+                        <input type="checkbox" @bind="State.CurrentUser.OfflineModeEnabled" class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
                     <div class="flex items-center justify-between">
@@ -202,7 +199,7 @@
                             <strong class="text-slate-800">Update on Wi-Fi</strong>
                             <div class="text-slate-400 text-[11px]">Auto refresh over Wi-Fi.</div>
                         </div>
-                        <input type="checkbox" checked class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
+                        <input type="checkbox" @bind="State.CurrentUser.AutoSyncEnabled" class="w-4 h-4 rounded text-navy-800 focus:ring-navy-800" />
                     </div>
 
                     <div class="flex items-center justify-between">
@@ -219,7 +216,6 @@
                 </div>
             </div>
 
-            <!-- Privacy -->
             <div class="card-base p-5">
                 <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Privacy</h3>
                 <p class="text-xs text-slate-400 mb-4">Manage local device history</p>
@@ -246,13 +242,12 @@
                             <strong class="text-slate-800">Clear saved content</strong>
                             <div class="text-slate-400 text-[11px]">Remove local cache.</div>
                         </div>
-                        <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-600">Review</button>
+                        <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-600" @onclick="ClearCache">Clear</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Accessibility -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Accessibility</h3>
             <p class="text-xs text-slate-400 mb-4">Adjust motion, contrast, and navigation support</p>
@@ -292,7 +287,6 @@
             </div>
         </div>
 
-        <!-- Sign Out Card -->
         <div class="card-base p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-red-200 bg-red-50/30 text-xs">
             <div>
                 <strong class="text-red-900">Finished using this device?</strong>
@@ -306,5 +300,40 @@
 </div>
 
 @code {
-    private void SaveSettings() { }
+    private string ActiveSection { get; set; } = "account";
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private void SaveSettings()
+    {
+        State.TriggerToast("Profile and preferences saved successfully!");
+    }
+
+    private void ChangePhoto()
+    {
+        State.TriggerToast("Photo upload dialog opened", "info");
+    }
+
+    private void ViewProfile()
+    {
+        State.TriggerToast($"Viewing public profile for {State.CurrentUser.FullName}", "info");
+    }
+
+    private void ManageAccount()
+    {
+        State.TriggerToast("Redirecting to university account portal...", "info");
+    }
+
+    private void ClearCache()
+    {
+        State.TriggerToast("Cleared offline temporary cache");
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
 }

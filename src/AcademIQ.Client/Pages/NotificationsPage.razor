@@ -1,8 +1,8 @@
 @page "/activity"
 @inject AppStateService State
 @inject NavigationManager Navigation
+@implements IDisposable
 
-<!-- Header -->
 <div class="mb-6">
     <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
         Updates Across Your Courses
@@ -28,16 +28,15 @@
     </div>
 </div>
 
-<!-- Filter Tabs & Search -->
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
         <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "all" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
                 @onclick='() => FilterCategory = "all"'>
-            All 8
+            All @State.Notifications.Count
         </button>
         <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "unread" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
                 @onclick='() => FilterCategory = "unread"'>
-            Unread 2
+            Unread @UnreadCount
         </button>
         <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(FilterCategory == "courses" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
                 @onclick='() => FilterCategory = "courses"'>
@@ -50,152 +49,73 @@
     </div>
 
     <div class="relative w-full sm:w-60">
-        <input type="text" class="input-field pl-9 text-xs" placeholder="Search activity" />
+        <input type="text" class="input-field pl-9 text-xs" placeholder="Search activity..." value="@SearchText" @oninput="OnSearchInput" />
         <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
     </div>
 </div>
 
-<!-- Main Split -->
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-    <!-- Feed Column -->
     <div class="space-y-6">
-        <!-- Today -->
-        <div class="card-base overflow-hidden">
-            <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <h3 class="font-serif font-semibold text-sm text-slate-900">Today</h3>
-                <span class="text-[11px] text-slate-400">3 updates</span>
+        @if (FilteredNotifications.Count == 0)
+        {
+            <div class="card-base p-12 text-center">
+                <div class="text-3xl mb-2">🎉</div>
+                <h3 class="font-serif text-lg font-semibold text-slate-800">All caught up!</h3>
+                <p class="text-xs text-slate-400 mt-1">No notifications matching this category.</p>
             </div>
+        }
+        else
+        {
+            <div class="card-base overflow-hidden">
+                <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-serif font-semibold text-sm text-slate-900">Recent Updates</h3>
+                    <span class="text-[11px] text-slate-400">@FilteredNotifications.Count items</span>
+                </div>
 
-            <div class="divide-y divide-slate-100 text-xs">
-                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-academic-green-50 text-academic-green-600 flex items-center justify-center shrink-0 font-bold">
-                            ✔
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-1.5 font-semibold text-slate-900">
-                                <span>Grade posted for Systems Quiz 2</span>
-                                <span class="w-1.5 h-1.5 rounded-full bg-academic-blue-500"></span>
+                <div class="divide-y divide-slate-100 text-xs">
+                    @foreach (var notif in FilteredNotifications)
+                    {
+                        var isUnread = !notif.IsRead;
+                        <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors cursor-pointer @(isUnread ? "bg-academic-blue-50/15" : "")"
+                             @onclick="() => ToggleRead(notif)">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 @(notif.Type == NotificationType.GradePublished ? "bg-academic-green-50 text-academic-green-600" : notif.Type == NotificationType.AssignmentDue ? "bg-academic-amber-50 text-academic-amber-600" : "bg-slate-100 text-slate-600")">
+                                    @(notif.Type == NotificationType.GradePublished ? "✔" : notif.Type == NotificationType.AssignmentDue ? "📅" : notif.Type == NotificationType.SyncCompleted ? "🔄" : notif.Type == NotificationType.CourseAnnouncement ? "📢" : "💬")
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-1.5 font-semibold text-slate-900">
+                                        <span>@notif.Title</span>
+                                        @if (isUnread)
+                                        {
+                                            <span class="w-1.5 h-1.5 rounded-full bg-academic-blue-500"></span>
+                                        }
+                                    </div>
+                                    <div class="text-slate-500 mt-0.5">@notif.Message</div>
+                                </div>
                             </div>
-                            <div class="text-slate-500 mt-0.5">You earned 18/20. Review the two questions you missed.</div>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="badge-status-green text-[10px]">CS-401</span>
-                        <div class="text-[10px] text-slate-400 mt-1">10:42 AM</div>
-                    </div>
-                </div>
-
-                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
-                            💬
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-1.5 font-semibold text-slate-900">
-                                <span>Prof. Lee left feedback on your draft</span>
-                                <span class="w-1.5 h-1.5 rounded-full bg-academic-blue-500"></span>
+                            <div class="text-right shrink-0">
+                                <span class="badge-status-green text-[10px]">@(notif.CourseCode ?? "General")</span>
+                                <div class="text-[10px] text-slate-400 mt-1">@notif.Timestamp.ToString("MMM dd · h:mm tt")</div>
                             </div>
-                            <div class="text-slate-500 mt-0.5">"Your comparison is clear. Add one sentence about the limits of the sample size."</div>
                         </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="badge-status-green text-[10px]">CS-401</span>
-                        <div class="text-[10px] text-slate-400 mt-1">9:18 AM</div>
-                    </div>
-                </div>
-
-                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-academic-green-50 text-academic-green-600 flex items-center justify-center shrink-0">
-                            🔄
-                        </div>
-                        <div>
-                            <div class="font-semibold text-slate-900">Your saved work is up to date</div>
-                            <div class="text-slate-500 mt-0.5">Lab Report 3 and two attachments were sent successfully.</div>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="badge-status-green text-[10px]">Saved work</span>
-                        <div class="text-[10px] text-slate-400 mt-1">8:57 AM</div>
-                    </div>
+                    }
                 </div>
             </div>
-        </div>
-
-        <!-- This Week -->
-        <div class="card-base overflow-hidden">
-            <div class="px-5 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <h3 class="font-serif font-semibold text-sm text-slate-900">This Week</h3>
-                <span class="text-[11px] text-slate-400">3 updates</span>
-            </div>
-
-            <div class="divide-y divide-slate-100 text-xs">
-                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-academic-amber-50 text-academic-amber-600 flex items-center justify-center shrink-0">
-                            📅
-                        </div>
-                        <div>
-                            <div class="font-semibold text-slate-900">Lab Report 3 is due Friday</div>
-                            <div class="text-slate-500 mt-0.5">Your draft has 842 words. Submit by Oct 4 at 11:59 PM.</div>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="badge-status-amber text-[10px]">CS-401</span>
-                        <div class="text-[10px] text-slate-400 mt-1">Sep 30</div>
-                    </div>
-                </div>
-
-                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
-                            📢
-                        </div>
-                        <div>
-                            <div class="font-semibold text-slate-900">New course announcement</div>
-                            <div class="text-slate-500 mt-0.5">Sample recovery data is now available in Course Materials.</div>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="badge-status-green text-[10px]">CS-401</span>
-                        <div class="text-[10px] text-slate-400 mt-1">Sep 29</div>
-                    </div>
-                </div>
-
-                <div class="p-4 flex items-start justify-between gap-4 hover:bg-slate-50/50 transition-colors">
-                    <div class="flex items-start gap-3">
-                        <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
-                            📄
-                        </div>
-                        <div>
-                            <div class="font-semibold text-slate-900">Proposal revision received</div>
-                            <div class="text-slate-500 mt-0.5">Your Technical Writing assignment was received and is awaiting review.</div>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <span class="badge-status-green text-[10px]">ENG-210</span>
-                        <div class="text-[10px] text-slate-400 mt-1">Sep 28</div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        }
     </div>
 
-    <!-- Right Sidebar -->
     <div class="space-y-6">
-        <!-- Catch-up Card -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">You're caught up</h3>
             <span class="text-[11px] text-slate-400 block mb-4">
-                2 updates are still unread
+                @UnreadCount updates are still unread
             </span>
 
             <div class="grid grid-cols-3 gap-2 text-center bg-slate-50 p-3 rounded-xl border border-slate-100">
                 <div>
-                    <div class="text-xl font-serif font-bold text-slate-900">2</div>
+                    <div class="text-xl font-serif font-bold text-slate-900">@UnreadCount</div>
                     <div class="text-[9px] uppercase font-bold tracking-wider text-slate-400">UNREAD</div>
                 </div>
                 <div>
@@ -203,13 +123,12 @@
                     <div class="text-[9px] uppercase font-bold tracking-wider text-slate-400">THIS WEEK</div>
                 </div>
                 <div>
-                    <div class="text-xl font-serif font-bold text-slate-900">8</div>
+                    <div class="text-xl font-serif font-bold text-slate-900">@State.Notifications.Count</div>
                     <div class="text-[9px] uppercase font-bold tracking-wider text-slate-400">TOTAL</div>
                 </div>
             </div>
         </div>
 
-        <!-- Delivery Preferences -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Delivery preferences</h3>
             <span class="text-[11px] text-slate-400 block mb-4">
@@ -244,4 +163,48 @@
 
 @code {
     private string FilterCategory { get; set; } = "all";
+    private string SearchText { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private int UnreadCount => State.Notifications.Count(n => !n.IsRead);
+
+    private List<ActivityNotification> FilteredNotifications
+    {
+        get
+        {
+            var query = State.Notifications.AsEnumerable();
+
+            if (FilterCategory == "unread") query = query.Where(n => !n.IsRead);
+            else if (FilterCategory == "courses") query = query.Where(n => n.CourseCode?.StartsWith("CS-") == true || n.CourseCode?.StartsWith("ENG-") == true);
+            else if (FilterCategory == "saved") query = query.Where(n => n.CourseCode == "Saved work" || n.Type == NotificationType.SyncCompleted);
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                query = query.Where(n => n.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                         n.Message.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return query.ToList();
+        }
+    }
+
+    private void OnSearchInput(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private void ToggleRead(ActivityNotification notif)
+    {
+        notif.IsRead = !notif.IsRead;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
 }

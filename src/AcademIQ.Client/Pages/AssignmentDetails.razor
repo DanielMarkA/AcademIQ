@@ -2,7 +2,6 @@
 @inject AppStateService State
 @inject NavigationManager Navigation
 
-<!-- Breadcrumb -->
 <div class="flex items-center gap-2 text-xs text-slate-400 mb-4">
     <a href="course/CS-401" class="hover:text-slate-800 transition-colors">CS-401 Advanced Systems</a>
     <span>/</span>
@@ -11,7 +10,6 @@
     <span class="text-slate-800 font-semibold">Lab Report 3</span>
 </div>
 
-<!-- Header -->
 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
     <div>
         <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
@@ -30,7 +28,7 @@
             <span class="w-2 h-2 rounded-full bg-academic-green-500 animate-pulse"></span>
             Draft saved on this device
         </span>
-        <button class="btn-primary" @onclick="NavigateToWorkspace">
+        <button class="btn-primary" @onclick="ContinueDraft">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
             </svg>
@@ -39,7 +37,6 @@
     </div>
 </div>
 
-<!-- 4 Meta Boxes Grid -->
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="card-base p-4 flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-lg">📅</div>
@@ -74,9 +71,7 @@
     </div>
 </div>
 
-<!-- Main Split: Brief & Requirements (Left) + Submission & Rubric Summary (Right) -->
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
-    <!-- Left Column -->
     <div class="card-base p-6 space-y-6">
         <div>
             <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
@@ -147,37 +142,34 @@
         </div>
     </div>
 
-    <!-- Right Column -->
     <div class="space-y-6">
-        <!-- Submission Card -->
         <div class="card-base p-5">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="font-serif font-semibold text-base text-slate-900">Your submission</h3>
-                <span class="badge-status-slate text-[10px]">Draft</span>
+                <span class="badge-status-slate text-[10px]">@(State.ActiveDraft?.SyncStatus == SyncStatus.Synced ? "Submitted" : "Draft")</span>
             </div>
             <span class="text-[11px] text-slate-400 block mb-4">
-                Last saved today at 10:18 AM
+                Last saved @(State.ActiveDraft?.LastSavedLocallyAt.ToString("h:mm tt") ?? "today at 10:18 AM")
             </span>
 
             <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3.5 mb-4">
                 <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
-                    <span>Lab Report 3 Draft</span>
-                    <span class="text-slate-400 font-normal">842 words</span>
+                    <span>@(State.ActiveDraft?.AssignmentTitle ?? "Lab Report 3 Draft")</span>
+                    <span class="text-slate-400 font-normal">@(State.ActiveDraft?.WordCount ?? 842) words</span>
                 </div>
                 <div class="text-[11px] text-slate-400 mt-1">
                     Saved on this device · Ready to continue
                 </div>
             </div>
 
-            <button class="btn-primary w-full mb-2" @onclick="NavigateToWorkspace">
+            <button class="btn-primary w-full mb-2" @onclick="ContinueDraft">
                 Continue Draft
             </button>
-            <button class="btn-secondary w-full text-xs" @onclick="NavigateToWorkspace">
+            <button class="btn-secondary w-full text-xs" @onclick="StartNewDraft">
                 + Start a New Draft
             </button>
         </div>
 
-        <!-- Course Materials -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Course materials</h3>
             <span class="text-[11px] text-slate-400 block mb-4">
@@ -185,7 +177,8 @@
             </span>
 
             <div class="space-y-2 text-xs">
-                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer">
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer"
+                     @onclick='() => DownloadFile("Lab 3 guide.pdf")'>
                     <div class="flex items-center gap-2.5">
                         <span class="text-sm">📄</span>
                         <div>
@@ -196,7 +189,8 @@
                     <span class="text-slate-400">⬇</span>
                 </div>
 
-                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer">
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer"
+                     @onclick='() => DownloadFile("Sample recovery data.csv")'>
                     <div class="flex items-center gap-2.5">
                         <span class="text-sm">📊</span>
                         <div>
@@ -207,7 +201,8 @@
                     <span class="text-slate-400">⬇</span>
                 </div>
 
-                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer">
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/70 transition-colors cursor-pointer"
+                     @onclick='() => DownloadFile("Experiment starter files.zip")'>
                     <div class="flex items-center gap-2.5">
                         <span class="text-sm">📦</span>
                         <div>
@@ -220,7 +215,6 @@
             </div>
         </div>
 
-        <!-- Rubric Summary -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Rubric summary</h3>
             <span class="text-[11px] text-slate-400 block mb-4">
@@ -271,8 +265,23 @@
 @code {
     [Parameter] public string? AssignmentId { get; set; }
 
-    private void NavigateToWorkspace()
+    private void ContinueDraft()
     {
         Navigation.NavigateTo("/workspace");
+    }
+
+    private void StartNewDraft()
+    {
+        var assignment = State.Assignments.FirstOrDefault();
+        if (assignment != null)
+        {
+            State.CreateNewDraft(assignment.Id, "Lab Report 3 Draft (Revision)");
+        }
+        Navigation.NavigateTo("/workspace");
+    }
+
+    private void DownloadFile(string fileName)
+    {
+        State.TriggerToast($"Saved {fileName} to local offline workspace");
     }
 }

@@ -1,8 +1,8 @@
 @page "/sync"
 @inject AppStateService State
 @inject NavigationManager Navigation
+@implements IDisposable
 
-<!-- Header -->
 <div class="mb-6">
     <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
         Saved on this device
@@ -19,7 +19,7 @@
 
         <div class="flex items-center gap-3 w-full sm:w-auto">
             <button class="btn-secondary flex-1 sm:flex-initial" @onclick="SimulateSync">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 @(IsSyncing ? "animate-spin" : "")" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
                 Update saved course content
@@ -28,13 +28,12 @@
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                 </svg>
-                Send pending work
+                Send pending work (@State.PendingUploadFiles.Count)
             </button>
         </div>
     </div>
 </div>
 
-<!-- Connection Status Alert -->
 <div class="card-base bg-academic-green-50/70 border-academic-green-200 p-4 mb-6 flex items-center justify-between">
     <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-full bg-white text-academic-green-600 flex items-center justify-center text-base shadow-2xs">
@@ -42,7 +41,7 @@
         </div>
         <div>
             <strong class="text-sm font-semibold text-academic-green-700">You're connected and up to date</strong>
-            <div class="text-xs text-slate-600">Last checked today at 10:24 AM · Your recent changes have been sent.</div>
+            <div class="text-xs text-slate-600">Last checked today at @LastCheckedTime · Your recent changes have been sent.</div>
         </div>
     </div>
     <span class="badge-status-green py-1 px-3">
@@ -50,145 +49,127 @@
     </span>
 </div>
 
-<!-- 4 Stat Summary Cards -->
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="card-base p-5">
         <div class="text-xl mb-2">📖</div>
-        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">3</div>
+        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">@ReadyOfflineCount</div>
         <div class="text-xs font-semibold text-slate-800">Courses ready offline</div>
-        <div class="text-[11px] text-slate-400">486 MB saved</div>
+        <div class="text-[11px] text-slate-400">@CalculatedStorageMb MB saved</div>
     </div>
 
     <div class="card-base p-5">
         <div class="text-xl mb-2">📝</div>
-        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">6</div>
+        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">@State.Drafts.Count</div>
         <div class="text-xs font-semibold text-slate-800">Drafts on this device</div>
         <div class="text-[11px] text-slate-400">Last saved moments ago</div>
     </div>
 
     <div class="card-base p-5">
         <div class="text-xl mb-2">⬆️</div>
-        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">2</div>
+        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">@State.PendingUploadFiles.Count</div>
         <div class="text-xs font-semibold text-slate-800">Pending uploads</div>
-        <div class="text-[11px] text-slate-400">2 attachments · 4.2 MB</div>
+        <div class="text-[11px] text-slate-400">@(State.PendingUploadFiles.Count * 2.1) MB</div>
     </div>
 
     <div class="card-base p-5">
         <div class="text-xl mb-2">⏱️</div>
-        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">10:24</div>
+        <div class="text-3xl font-serif font-bold text-slate-900 leading-none mb-1">@LastCheckedTime</div>
         <div class="text-xs font-semibold text-slate-800">Last updated</div>
         <div class="text-[11px] text-slate-400">Today</div>
     </div>
 </div>
 
-<!-- Main Split -->
 <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 mb-6">
-    <!-- Courses Available Offline -->
     <div class="card-base overflow-hidden">
         <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div>
                 <h3 class="font-serif font-semibold text-base text-slate-900">Courses available without a connection</h3>
                 <span class="text-xs text-slate-400">Choose what to keep on this device</span>
             </div>
-            <span class="text-xs font-mono text-slate-400 font-semibold">486 MB total</span>
+            <span class="text-xs font-mono text-slate-400 font-semibold">@CalculatedStorageMb MB total</span>
         </div>
 
         <div class="divide-y divide-slate-100">
-            <div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <span class="badge-status-green font-bold text-xs py-1 px-2.5">
-                        CS-401
-                    </span>
-                    <div>
-                        <div class="font-semibold text-sm text-slate-900">Advanced Systems</div>
-                        <div class="text-xs text-slate-400">All modules · 28 files · 3 drafts · Today, 9:42 AM</div>
+            @foreach (var course in State.Courses)
+            {
+                var isOff = State.CourseOfflineStatus.TryGetValue(course.Code, out var val) && val;
+                var sizeMb = course.Code == "CS-401" ? 214 : course.Code == "CS-315" ? 168 : 104;
+                <div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="badge-status-green font-bold text-xs py-1 px-2.5">
+                            @course.Code
+                        </span>
+                        <div>
+                            <div class="font-semibold text-sm text-slate-900">@course.Title</div>
+                            <div class="text-xs text-slate-400">All modules · @(course.Code == "CS-401" ? "28 files" : "34 files") · Today, 9:42 AM</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 self-end sm:self-auto">
+                        <span class="text-xs font-mono text-slate-400">@sizeMb MB</span>
+                        @if (isOff)
+                        {
+                            <span class="badge-status-green">Ready offline</span>
+                            <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-500 hover:text-red-600 hover:border-red-200"
+                                    @onclick="() => State.ToggleCourseOffline(course.Code)">
+                                🗑️ Remove
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="badge-status-blue">Updating</span>
+                            <button class="btn-secondary !py-1 !px-2.5 text-xs"
+                                    @onclick="() => State.ToggleCourseOffline(course.Code)">
+                                ⬇ Download
+                            </button>
+                        }
                     </div>
                 </div>
-                <div class="flex items-center gap-3 self-end sm:self-auto">
-                    <span class="text-xs font-mono text-slate-400">214 MB</span>
-                    <span class="badge-status-green">Ready offline</span>
-                    <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-500 hover:text-red-600 hover:border-red-200">
-                        🗑️ Remove
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <span class="badge-status-green font-bold text-xs py-1 px-2.5">
-                        CS-315
-                    </span>
-                    <div>
-                        <div class="font-semibold text-sm text-slate-900">Data Structures</div>
-                        <div class="text-xs text-slate-400">Weeks 1–6 · 34 files · 1 draft · Yesterday, 4:16 PM</div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 self-end sm:self-auto">
-                    <span class="text-xs font-mono text-slate-400">168 MB</span>
-                    <span class="badge-status-green">Ready offline</span>
-                    <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-500 hover:text-red-600 hover:border-red-200">
-                        🗑️ Remove
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <span class="badge-status-blue font-bold text-xs py-1 px-2.5">
-                        ENG-210
-                    </span>
-                    <div>
-                        <div class="font-semibold text-sm text-slate-900">Technical Writing</div>
-                        <div class="text-xs text-slate-400">Weeks 1–5 · 19 files · 2 drafts · Updating now</div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3 self-end sm:self-auto">
-                    <span class="text-xs font-mono text-slate-400">104 MB</span>
-                    <span class="badge-status-blue">Updating</span>
-                    <button class="btn-outline !py-1 !px-2.5 text-xs text-slate-500 hover:text-red-600 hover:border-red-200">
-                        🗑️ Remove
-                    </button>
-                </div>
-            </div>
+            }
         </div>
     </div>
 
-    <!-- Right Sidebar -->
     <div class="space-y-6">
-        <!-- Pending Uploads -->
         <div class="card-base p-5">
             <div class="flex items-center justify-between mb-1">
                 <h3 class="font-serif font-semibold text-base text-slate-900">Pending uploads</h3>
-                <span class="badge-status-amber text-[10px]">2 files</span>
+                <span class="badge-status-amber text-[10px]">@State.PendingUploadFiles.Count files</span>
             </div>
             <span class="text-[11px] text-slate-400 block mb-4">
                 These will be sent when ready
             </span>
 
-            <div class="space-y-2 mb-4">
-                <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-2.5 text-xs">
-                    <span class="text-sm">📄</span>
-                    <div>
-                        <strong class="font-semibold text-slate-800">recovery-chart.png</strong>
-                        <div class="text-[10px] text-slate-400">2.8 MB · Lab Report 3</div>
-                    </div>
+            @if (State.PendingUploadFiles.Count == 0)
+            {
+                <div class="p-4 bg-slate-50 rounded-xl text-center text-xs text-slate-400 mb-4 border border-slate-100">
+                    ✔ All drafts and attachments are synced!
                 </div>
-
-                <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center gap-2.5 text-xs">
-                    <span class="text-sm">📊</span>
-                    <div>
-                        <strong class="font-semibold text-slate-800">results.csv</strong>
-                        <div class="text-[10px] text-slate-400">1.4 MB · Lab Report 3</div>
-                    </div>
+            }
+            else
+            {
+                <div class="space-y-2 mb-4">
+                    @foreach (var file in State.PendingUploadFiles)
+                    {
+                        <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between text-xs">
+                            <div class="flex items-center gap-2.5">
+                                <span class="text-sm">📄</span>
+                                <div>
+                                    <strong class="font-semibold text-slate-800">@file</strong>
+                                    <div class="text-[10px] text-slate-400">2.1 MB · Lab Report 3</div>
+                                </div>
+                            </div>
+                            <span class="badge-status-amber text-[9px]">Queued</span>
+                        </div>
+                    }
                 </div>
-            </div>
+            }
 
-            <button class="btn-primary w-full" @onclick="SimulateSend">
+            <button class="btn-primary w-full @(State.PendingUploadFiles.Count == 0 ? "!bg-slate-300 !cursor-not-allowed" : "")" 
+                    @onclick="SimulateSend"
+                    disabled="@(State.PendingUploadFiles.Count == 0)">
                 Send pending work
             </button>
         </div>
 
-        <!-- Device Storage -->
         <div class="card-base p-5">
             <h3 class="font-serif font-semibold text-base text-slate-900 mb-0.5">Device storage</h3>
             <span class="text-[11px] text-slate-400 block mb-3">
@@ -196,18 +177,18 @@
             </span>
 
             <div class="flex items-baseline justify-between mb-2">
-                <span class="text-2xl font-serif font-bold text-slate-900">486 MB</span>
+                <span class="text-2xl font-serif font-bold text-slate-900">@CalculatedStorageMb MB</span>
                 <span class="text-xs text-slate-400">of 2 GB available</span>
             </div>
 
             <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
-                <div class="h-full bg-academic-green-500 rounded-full" style="width: 24.3%;"></div>
+                <div class="h-full bg-academic-green-500 rounded-full transition-all" style="width: @(CalculatedStorageMb / 20.48)%;"></div>
             </div>
 
             <div class="space-y-1.5 text-xs text-slate-500 mb-4">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-navy-800"></span>
-                    Courses · 392 MB
+                    Courses · @(CalculatedStorageMb - 94) MB
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-academic-green-500"></span>
@@ -219,14 +200,13 @@
                 </div>
             </div>
 
-            <button class="btn-secondary w-full text-xs">
+            <button class="btn-secondary w-full text-xs" @onclick="ManageStorageAction">
                 ⚙️ Manage saved content
             </button>
         </div>
     </div>
 </div>
 
-<!-- Info Banner -->
 <div class="card-base p-4 flex items-center justify-between text-xs">
     <div class="flex items-center gap-3">
         <span class="text-base">ℹ️</span>
@@ -239,6 +219,50 @@
 </div>
 
 @code {
-    private void SimulateSync() { }
-    private void SimulateSend() { }
+    private string LastCheckedTime { get; set; } = "10:24 AM";
+    private bool IsSyncing { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private int ReadyOfflineCount => State.CourseOfflineStatus.Values.Count(v => v);
+
+    private int CalculatedStorageMb
+    {
+        get
+        {
+            int baseSize = 94;
+            if (State.CourseOfflineStatus.TryGetValue("CS-401", out var c1) && c1) baseSize += 214;
+            if (State.CourseOfflineStatus.TryGetValue("CS-315", out var c2) && c2) baseSize += 168;
+            if (State.CourseOfflineStatus.TryGetValue("ENG-210", out var c3) && c3) baseSize += 104;
+            return baseSize;
+        }
+    }
+
+    private async Task SimulateSync()
+    {
+        IsSyncing = true;
+        StateHasChanged();
+        await Task.Delay(400);
+        IsSyncing = false;
+        LastCheckedTime = DateTime.Now.ToString("h:mm tt");
+        State.RefreshCourseMaterials();
+    }
+
+    private void SimulateSend()
+    {
+        State.SyncPendingUploads();
+    }
+
+    private void ManageStorageAction()
+    {
+        Navigation.NavigateTo("/profile");
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
 }

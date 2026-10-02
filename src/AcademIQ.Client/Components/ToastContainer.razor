@@ -1,0 +1,55 @@
+@inject AppStateService State
+@implements IDisposable
+
+@if (!string.IsNullOrEmpty(CurrentMessage))
+{
+    <div class="fixed bottom-5 right-5 z-50 transition-all duration-300 transform translate-y-0 opacity-100 max-w-sm">
+        <div class="card-base p-4 shadow-lg flex items-center gap-3 border-l-4 @(ToastType == "info" ? "border-l-academic-blue-500 bg-white" : "border-l-academic-green-500 bg-white")">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 @(ToastType == "info" ? "bg-academic-blue-50 text-academic-blue-600" : "bg-academic-green-50 text-academic-green-600")">
+                @(ToastType == "info" ? "ℹ" : "✔")
+            </div>
+            <div class="flex-1 text-xs font-medium text-slate-800 leading-snug">
+                @CurrentMessage
+            </div>
+            <button type="button" class="text-slate-400 hover:text-slate-600 text-sm" @onclick="Dismiss">
+                &times;
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private string? CurrentMessage { get; set; }
+    private string ToastType { get; set; } = "success";
+    private System.Threading.Timer? AutoDismissTimer;
+
+    protected override void OnInitialized()
+    {
+        State.OnToast += HandleToast;
+    }
+
+    private void HandleToast(string message, string type)
+    {
+        CurrentMessage = message;
+        ToastType = type;
+        InvokeAsync(StateHasChanged);
+
+        AutoDismissTimer?.Dispose();
+        AutoDismissTimer = new System.Threading.Timer(_ =>
+        {
+            CurrentMessage = null;
+            InvokeAsync(StateHasChanged);
+        }, null, 3500, System.Threading.Timeout.Infinite);
+    }
+
+    private void Dismiss()
+    {
+        CurrentMessage = null;
+    }
+
+    public void Dispose()
+    {
+        State.OnToast -= HandleToast;
+        AutoDismissTimer?.Dispose();
+    }
+}

@@ -161,9 +161,16 @@
 
     private string GetRenderedActiveDraftHtml()
     {
-        if (string.IsNullOrEmpty(State.ActiveDraft?.MarkdownContent)) return "<p>No content</p>";
-        var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
-        return Markdown.ToHtml(State.ActiveDraft.MarkdownContent, pipeline);
+        try
+        {
+            if (string.IsNullOrEmpty(State.ActiveDraft?.MarkdownContent)) return "<p>No content</p>";
+            var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+            return Markdown.ToHtml(State.ActiveDraft.MarkdownContent, pipeline);
+        }
+        catch
+        {
+            return $"<pre class='whitespace-pre-wrap'>{System.Net.WebUtility.HtmlEncode(State.ActiveDraft?.MarkdownContent ?? string.Empty)}</pre>";
+        }
     }
 
     private void HandleGeneratePdf()

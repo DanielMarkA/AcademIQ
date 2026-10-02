@@ -1,8 +1,8 @@
 @page "/courses"
 @inject AppStateService State
 @inject NavigationManager Navigation
+@implements IDisposable
 
-<!-- Header -->
 <div class="mb-6">
     <div class="text-[11px] font-bold uppercase tracking-wider text-academic-green-600 mb-1">
         Fall 2026 · Current Term
@@ -19,7 +19,11 @@
 
         <div class="flex items-center gap-3 w-full sm:w-auto">
             <div class="relative flex-1 sm:flex-initial">
-                <input type="text" class="input-field pl-9 w-full sm:w-60 text-xs" placeholder="Search courses" />
+                <input type="text" 
+                       class="input-field pl-9 w-full sm:w-60 text-xs" 
+                       placeholder="Search courses..." 
+                       value="@SearchText" 
+                       @oninput="OnSearchChanged" />
                 <svg class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
@@ -34,14 +38,13 @@
     </div>
 </div>
 
-<!-- Offline Availability Banner -->
 <div class="card-base bg-academic-green-50/70 border-academic-green-200 p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
     <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-xl bg-white text-academic-green-600 flex items-center justify-center text-lg shadow-2xs">
             📖
         </div>
         <div>
-            <strong class="text-sm font-semibold text-academic-green-700">All three courses are available on this device</strong>
+            <strong class="text-sm font-semibold text-academic-green-700">All courses are available on this device</strong>
             <div class="text-xs text-slate-600">Recent lessons, assignments, and your drafts are ready without a connection.</div>
         </div>
     </div>
@@ -50,16 +53,15 @@
     </div>
 </div>
 
-<!-- Filter Tabs & Term Selector -->
 <div class="flex items-center justify-between gap-4 mb-6">
     <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
         <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(SelectedFilter == "all" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
                 @onclick='() => SelectedFilter = "all"'>
-            All 3
+            All @FilteredCourses.Count
         </button>
         <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(SelectedFilter == "progress" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
                 @onclick='() => SelectedFilter = "progress"'>
-            In Progress 3
+            In Progress @FilteredCourses.Count
         </button>
         <button class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all @(SelectedFilter == "completed" ? "bg-white text-slate-900 shadow-2xs" : "text-slate-500 hover:text-slate-800")" 
                 @onclick='() => SelectedFilter = "completed"'>
@@ -78,148 +80,76 @@
     </div>
 </div>
 
-<!-- 3 Courses Grid -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-    <!-- Course 1 -->
-    <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
-        <div>
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    CS-401 · Fall 2026
-                </span>
-                <span class="badge-status-green">Ready offline</span>
-            </div>
-            <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
-                Advanced Systems
-            </h2>
-            <div class="text-xs text-slate-500 mb-5">
-                Prof. Lee
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
-                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
-                    Next Milestone
-                </div>
-                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
-                    <span>Lab Report 3</span>
-                    <span class="text-slate-400 font-normal">Due Oct 4 · 11:59 PM</span>
-                </div>
-            </div>
-
-            <div class="mb-5">
-                <div class="flex justify-between text-xs mb-1.5 text-slate-600">
-                    <span>Course progress</span>
-                    <strong class="font-semibold text-slate-900">68%</strong>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 68%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
-            <span class="text-slate-400">Updated today at 9:42 AM</span>
-            <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick='() => NavigateToCourse("CS-401")'>
-                Open course
-                <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-            </button>
-        </div>
+@if (FilteredCourses.Count == 0)
+{
+    <div class="card-base p-12 text-center">
+        <div class="text-3xl mb-2">🔍</div>
+        <h3 class="font-serif text-lg font-semibold text-slate-800">No courses match your search</h3>
+        <p class="text-xs text-slate-400 mt-1">Try a different keyword or reset filters.</p>
+        <button class="btn-secondary !py-1.5 !px-3 text-xs mt-4" @onclick="ResetSearch">Reset Search</button>
     </div>
+}
+else
+{
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        @foreach (var course in FilteredCourses)
+        {
+            var isOffline = State.CourseOfflineStatus.TryGetValue(course.Code, out var off) && off;
+            <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                            @course.Code · @course.AcademicTerm
+                        </span>
+                        @if (isOffline)
+                        {
+                            <span class="badge-status-green">Ready offline</span>
+                        }
+                        else
+                        {
+                            <span class="badge-status-blue">Materials updating</span>
+                        }
+                    </div>
+                    <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
+                        @course.Title
+                    </h2>
+                    <div class="text-xs text-slate-500 mb-5">
+                        @course.InstructorName
+                    </div>
 
-    <!-- Course 2 -->
-    <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
-        <div>
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    CS-315 · Fall 2026
-                </span>
-                <span class="badge-status-green">Ready offline</span>
-            </div>
-            <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
-                Data Structures
-            </h2>
-            <div class="text-xs text-slate-500 mb-5">
-                Dr. Sofia Malik
-            </div>
+                    <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
+                        <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
+                            Next Milestone
+                        </div>
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
+                            <span>@(course.Code == "CS-401" ? "Lab Report 3" : course.Code == "CS-315" ? "Problem Set 6" : "Proposal revision")</span>
+                            <span class="text-slate-400 font-normal">@(course.Code == "CS-401" ? "Due Oct 4 · 11:59 PM" : course.Code == "CS-315" ? "Due Oct 7 · 9:00 AM" : "Due Oct 11 · 5:00 PM")</span>
+                        </div>
+                    </div>
 
-            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
-                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
-                    Next Milestone
+                    <div class="mb-5">
+                        <div class="flex justify-between text-xs mb-1.5 text-slate-600">
+                            <span>Course progress</span>
+                            <strong class="font-semibold text-slate-900">@(course.Code == "CS-401" ? "68%" : course.Code == "CS-315" ? "54%" : "82%")</strong>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full bg-academic-green-500 rounded-full" style="width: @(course.Code == "CS-401" ? "68%" : course.Code == "CS-315" ? "54%" : "82%");"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
-                    <span>Problem Set 6</span>
-                    <span class="text-slate-400 font-normal">Due Oct 7 · 9:00 AM</span>
+
+                <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Updated today at 9:42 AM</span>
+                    <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick="() => NavigateToCourse(course.Code)">
+                        Open course
+                        <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+                    </button>
                 </div>
             </div>
-
-            <div class="mb-5">
-                <div class="flex justify-between text-xs mb-1.5 text-slate-600">
-                    <span>Course progress</span>
-                    <strong class="font-semibold text-slate-900">54%</strong>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 54%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
-            <span class="text-slate-400">Updated today at 9:42 AM</span>
-            <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick='() => NavigateToCourse("CS-315")'>
-                Open course
-                <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-            </button>
-        </div>
+        }
     </div>
+}
 
-    <!-- Course 3 -->
-    <div class="card-base p-6 flex flex-col justify-between border-t-4 border-t-academic-green-500 hover:shadow-md transition-shadow">
-        <div>
-            <div class="flex items-center justify-between mb-2">
-                <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                    ENG-210 · Fall 2026
-                </span>
-                <span class="badge-status-blue">Materials updating</span>
-            </div>
-            <h2 class="font-serif text-xl font-bold text-slate-900 mb-0.5">
-                Technical Writing
-            </h2>
-            <div class="text-xs text-slate-500 mb-5">
-                Elena Ruiz
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200/70 rounded-xl p-3 mb-5">
-                <div class="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-1">
-                    Next Milestone
-                </div>
-                <div class="flex items-center justify-between text-xs font-semibold text-slate-800">
-                    <span>Proposal revision</span>
-                    <span class="text-slate-400 font-normal">Due Oct 11 · 5:00 PM</span>
-                </div>
-            </div>
-
-            <div class="mb-5">
-                <div class="flex justify-between text-xs mb-1.5 text-slate-600">
-                    <span>Course progress</span>
-                    <strong class="font-semibold text-slate-900">82%</strong>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div class="h-full bg-academic-green-500 rounded-full" style="width: 82%;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="border-t border-slate-100 pt-4 flex items-center justify-between text-xs">
-            <span class="text-slate-400">Updated today at 9:42 AM</span>
-            <button class="btn-secondary !py-1 !px-3 text-xs gap-1 group" @onclick='() => NavigateToCourse("ENG-210")'>
-                Open course
-                <span class="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Calendar Footer Banner -->
 <div class="card-base p-4 flex items-center justify-between text-xs text-slate-600">
     <div class="flex items-center gap-2">
         <span>📅</span>
@@ -232,11 +162,53 @@
 
 @code {
     private string SelectedFilter { get; set; } = "all";
+    private string SearchText { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        State.OnChange += StateHasChanged;
+    }
+
+    private List<Course> FilteredCourses
+    {
+        get
+        {
+            if (SelectedFilter == "completed") return new List<Course>();
+
+            var list = State.Courses;
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                list = list.Where(c => c.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                       c.Code.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+                                       c.InstructorName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            return list;
+        }
+    }
+
+    private void OnSearchChanged(ChangeEventArgs e)
+    {
+        SearchText = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private void ResetSearch()
+    {
+        SearchText = string.Empty;
+        SelectedFilter = "all";
+    }
 
     private void NavigateToCourse(string code)
     {
         Navigation.NavigateTo($"/course/{code}");
     }
 
-    private void UpdateSavedContent() { }
+    private void UpdateSavedContent()
+    {
+        State.RefreshCourseMaterials();
+    }
+
+    public void Dispose()
+    {
+        State.OnChange -= StateHasChanged;
+    }
 }

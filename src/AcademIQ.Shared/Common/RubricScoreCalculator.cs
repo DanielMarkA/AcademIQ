@@ -10,11 +10,14 @@ public static class RubricScoreCalculator
 {
     public static EvaluationResultDto CalculateScore(
         Guid submissionId,
-        IEnumerable<RubricCriterion> criteria,
-        IEnumerable<RubricEvaluation> evaluations)
+        IEnumerable<RubricCriterion>? criteria,
+        IEnumerable<RubricEvaluation>? evaluations)
     {
-        var criteriaList = criteria.ToList();
-        var evalDict = evaluations.ToDictionary(e => e.RubricCriterionId, e => e);
+        var criteriaList = criteria?.ToList() ?? new List<RubricCriterion>();
+        var evalDict = evaluations?
+            .GroupBy(e => e.RubricCriterionId)
+            .ToDictionary(g => g.Key, g => g.Last()) 
+            ?? new Dictionary<Guid, RubricEvaluation>();
 
         decimal totalEarned = 0m;
         decimal totalPossible = 0m;
